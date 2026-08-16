@@ -1,0 +1,19 @@
+{
+  "name": "student-mentor-portal",
+  "version": "1.0.0",
+  "description": "Student-Faculty Mentorship Portal",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w backend\"",
+    "install-all": "npm install"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "eslint": "^8.54.0",
+    "prettier": "^3.1.0",
+    "concurrently": "^8.2.0"
+  }
+}
