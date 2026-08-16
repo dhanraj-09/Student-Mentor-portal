@@ -1,0 +1,75 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: student_mentor_db
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-student_mentor}
+    ports:
+      - '${DB_PORT:-5432}:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-postgres}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - student_mentor_network
+
+  backend:
+    build:
+      context: .
+      dockerfile: packages/backend/Dockerfile
+      target: development
+    container_name: student_mentor_backend
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 8080
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_NAME: ${DB_NAME:-student_mentor}
+      JWT_SECRET: ${JWT_SECRET:-dev-only-secret}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:5173}
+    ports:
+      - '${PORT:-8080}:8080'
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./packages/backend/src:/app/packages/backend/src
+      - ./packages/shared/src:/app/packages/shared/src
+      # Anonymous volume keeps the image's node_modules from being shadowed
+      # by the host mount above.
+      - /app/node_modules
+    networks:
+      - student_mentor_network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: packages/frontend/Dockerfile
+      target: development
+    container_name: student_mentor_frontend
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
+    ports:
+      - '${FRONTEND_PORT:-5173}:5173'
+    volumes:
+      - ./packages/frontend/src:/app/packages/frontend/src
+      - ./packages/shared/src:/app/packages/shared/src
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - student_mentor_network
+
+volumes:
+  postgres_data:
+
+networks:
+  student_mentor_network:
+    driver: bridge

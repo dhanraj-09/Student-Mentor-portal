@@ -1,0 +1,9 @@
+echo "Running pre-commit checks..."
+
+# Format and lint only staged files, then re-stage them
+npx lint-staged || exit 1
+
+# Type-check every workspace (catches cross-file type errors lint-staged cannot)
+npm run typecheck || exit 1
+
+echo "Pre-commit checks passed."
