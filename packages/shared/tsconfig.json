@@ -9,7 +9,6 @@
     "rootDir": "./src",
     "baseUrl": "./src",
     "declaration": true,
-    "emitDeclarationOnly": true,
     "paths": {
       "@/*": ["./*"],
       "@types/*": ["./types/*"],

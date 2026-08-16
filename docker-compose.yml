@@ -1,7 +1,4 @@
-version: '3.8'
-
 services:
-  # PostgreSQL Database
   db:
     image: postgres:16-alpine
     container_name: student_mentor_db
@@ -21,22 +18,22 @@ services:
     networks:
       - student_mentor_network
 
-  # Backend API
   backend:
     build:
       context: .
       dockerfile: packages/backend/Dockerfile
+      target: development
     container_name: student_mentor_backend
     environment:
       NODE_ENV: ${NODE_ENV:-development}
-      PORT: ${PORT:-8080}
+      PORT: 8080
       DB_HOST: db
-      DB_PORT: ${DB_PORT:-5432}
+      DB_PORT: 5432
       DB_USER: ${DB_USER:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       DB_NAME: ${DB_NAME:-student_mentor}
-      JWT_SECRET: ${JWT_SECRET:-your-secret-key}
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000}
+      JWT_SECRET: ${JWT_SECRET:-dev-only-secret}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:5173}
     ports:
       - '${PORT:-8080}:8080'
     depends_on:
@@ -44,15 +41,18 @@ services:
         condition: service_healthy
     volumes:
       - ./packages/backend/src:/app/packages/backend/src
-    command: npm run dev -w backend
+      - ./packages/shared/src:/app/packages/shared/src
+      # Anonymous volume keeps the image's node_modules from being shadowed
+      # by the host mount above.
+      - /app/node_modules
     networks:
       - student_mentor_network
 
-  # Frontend (Optional - for development)
   frontend:
     build:
       context: .
       dockerfile: packages/frontend/Dockerfile
+      target: development
     container_name: student_mentor_frontend
     environment:
       VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
@@ -60,7 +60,10 @@ services:
       - '${FRONTEND_PORT:-5173}:5173'
     volumes:
       - ./packages/frontend/src:/app/packages/frontend/src
-    command: npm run dev -w frontend
+      - ./packages/shared/src:/app/packages/shared/src
+      - /app/node_modules
+    depends_on:
+      - backend
     networks:
       - student_mentor_network
 
