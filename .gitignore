@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
-package-lock.json
+
+# Lock files from other package managers (this repo uses npm)
 yarn.lock
 pnpm-lock.yaml
 

@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: student_mentor_db
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-student_mentor}
+    ports:
+      - '${DB_PORT:-5432}:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-postgres}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - student_mentor_network
+
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: packages/backend/Dockerfile
+    container_name: student_mentor_backend
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${PORT:-8080}
+      DB_HOST: db
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_NAME: ${DB_NAME:-student_mentor}
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000}
+    ports:
+      - '${PORT:-8080}:8080'
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./packages/backend/src:/app/packages/backend/src
+    command: npm run dev -w backend
+    networks:
+      - student_mentor_network
+
+  # Frontend (Optional - for development)
+  frontend:
+    build:
+      context: .
+      dockerfile: packages/frontend/Dockerfile
+    container_name: student_mentor_frontend
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
+    ports:
+      - '${FRONTEND_PORT:-5173}:5173'
+    volumes:
+      - ./packages/frontend/src:/app/packages/frontend/src
+    command: npm run dev -w frontend
+    networks:
+      - student_mentor_network
+
+volumes:
+  postgres_data:
+
+networks:
+  student_mentor_network:
+    driver: bridge
