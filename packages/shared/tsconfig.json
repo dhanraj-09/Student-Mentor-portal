@@ -7,14 +7,7 @@
     "lib": ["ES2020"],
     "outDir": "./dist",
     "rootDir": "./src",
-    "baseUrl": "./src",
-    "declaration": true,
-    "paths": {
-      "@/*": ["./*"],
-      "@types/*": ["./types/*"],
-      "@constants/*": ["./constants/*"],
-      "@validation/*": ["./validation/*"]
-    }
+    "declaration": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

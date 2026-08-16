@@ -6,16 +6,7 @@
     "moduleResolution": "nodenext",
     "lib": ["ES2020"],
     "outDir": "./dist",
-    "rootDir": "./src",
-    "baseUrl": "./src",
-    "paths": {
-      "@/*": ["./*"],
-      "@middleware/*": ["./middleware/*"],
-      "@services/*": ["./services/*"],
-      "@models/*": ["./models/*"],
-      "@utils/*": ["./utils/*"],
-      "@errors/*": ["./errors/*"]
-    }
+    "rootDir": "./src"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "__tests__"]

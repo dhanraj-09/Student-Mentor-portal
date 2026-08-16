@@ -7,17 +7,7 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
     "outDir": "./dist",
-    "rootDir": "./src",
-    "baseUrl": "./src",
-    "paths": {
-      "@/*": ["./*"],
-      "@pages/*": ["./pages/*"],
-      "@components/*": ["./components/*"],
-      "@hooks/*": ["./hooks/*"],
-      "@api/*": ["./api/*"],
-      "@context/*": ["./context/*"],
-      "@styles/*": ["./styles/*"]
-    }
+    "rootDir": "./src"
   },
   "include": ["src/**/*", "index.html"],
   "exclude": ["node_modules", "dist"]
