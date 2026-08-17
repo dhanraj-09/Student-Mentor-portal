@@ -10,6 +10,13 @@ type AsyncRequestHandler = (
 ) => Promise<void>;
 
 /**
+ * What every service returns. Services stay HTTP-agnostic: they report a
+ * domain error code and the route layer maps it to a status code.
+ */
+export type Result<T, E extends string> =
+  { success: true; data: T } | { success: false; code: E; detail?: string };
+
+/**
  * Express 4 does not catch rejected promises from async handlers, so every
  * async route must be wrapped or a thrown error hangs the request.
  */
