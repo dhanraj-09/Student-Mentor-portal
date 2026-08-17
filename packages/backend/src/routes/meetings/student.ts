@@ -1,5 +1,3 @@
-/** Student-facing meeting routes. */
-
 import { Router } from 'express';
 import { studentOnly } from '../../middleware/auth/authorization.js';
 import { studentOwnership } from '../../middleware/auth/ownership.js';

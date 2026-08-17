@@ -1,10 +1,3 @@
-/**
- * Meeting persistence.
- *
- * Meetings are append-and-transition only: there is no general update or
- * delete, just the lifecycle moves pending -> accepted -> ongoing -> completed.
- */
-
 import type { RowDataPacket } from 'mysql2/promise';
 import type { MeetingInitiator, MeetingStatus } from 'shared';
 import { mutate, query, queryOne, withTransaction } from '../shared/index.js';
@@ -22,7 +15,6 @@ export interface MeetingRow extends RowDataPacket {
   marks: number | null;
   created_at: Date;
   completed_at: Date | null;
-  /** Comma-joined skill names, present only on the faculty list view. */
   skills?: string | null;
 }
 
@@ -52,7 +44,6 @@ export async function insertMeeting(
   return result.insertId;
 }
 
-/** Faculty list view, with the discussed skills rolled up into one column. */
 export function findMeetingsByFaculty(
   facultyEmail: string
 ): Promise<MeetingRow[]> {
@@ -72,7 +63,6 @@ export function findMeetingsByFaculty(
   );
 }
 
-/** Student list view — no marks and no skills, those are faculty-only. */
 export function findMeetingsByStudent(
   registrationNo: string
 ): Promise<MeetingRow[]> {
@@ -98,7 +88,6 @@ export function findMeetingById(meetingId: string): Promise<MeetingRow | null> {
   );
 }
 
-/** Returns the meeting only when it belongs to the given faculty member. */
 export function findMeetingOwnedByFaculty(
   meetingId: string,
   facultyEmail: string
@@ -146,10 +135,6 @@ export async function updateReadiness(
   ]);
 }
 
-/**
- * Marks a meeting complete and records the skills discussed in one transaction,
- * so marks and skills are never persisted independently.
- */
 export function completeMeeting(
   meetingId: string,
   marks: number,

@@ -1,5 +1,3 @@
-/** Faculty profile reads. */
-
 import type { RowDataPacket } from 'mysql2/promise';
 import { queryOne } from '../shared/index.js';
 
@@ -13,10 +11,6 @@ export interface FacultyProfileRow extends RowDataPacket {
   muj_page: string | null;
 }
 
-/**
- * Public directory fields only — `password_hash` is never selected, which is
- * what makes this record safe to expose to any authenticated user.
- */
 export function findFacultyProfile(
   email: string
 ): Promise<FacultyProfileRow | null> {

@@ -1,5 +1,3 @@
-/** Student queries: creation, listing, and faculty responses. */
-
 import type { RowDataPacket } from 'mysql2/promise';
 import type { QueryStatus } from 'shared';
 import { mutate, query, queryOne } from '../shared/index.js';
@@ -25,7 +23,6 @@ export interface NewQuery {
   description: string;
 }
 
-/** A student's own queries — the response columns are included so they can read replies. */
 export function findQueriesByStudent(
   registrationNo: string
 ): Promise<QueryRow[]> {
@@ -38,7 +35,6 @@ export function findQueriesByStudent(
   );
 }
 
-/** Every query raised by the students a faculty member mentors. */
 export function findQueriesByFaculty(
   facultyEmail: string
 ): Promise<QueryRow[]> {
@@ -68,10 +64,6 @@ export async function insertQuery(newQuery: NewQuery): Promise<number> {
   return result.insertId;
 }
 
-/**
- * Confirms the query belongs to one of the faculty's own mentees. Returns null
- * when it does not, which the service treats as forbidden.
- */
 export function findQueryOwnedByFaculty(
   queryId: string,
   facultyEmail: string

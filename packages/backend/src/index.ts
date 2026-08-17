@@ -1,11 +1,8 @@
-/** Process entry point: verify the database, then start listening. */
-
 import { config } from './config.js';
 import { closePool, verifyConnection } from './models/shared/index.js';
 import { createApp } from './server.js';
 
 async function start(): Promise<void> {
-  // Fail before accepting traffic if the database is unreachable.
   await verifyConnection();
   // eslint-disable-next-line no-console
   console.log('Connected to the MySQL database!');

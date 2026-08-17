@@ -1,0 +1,134 @@
+/* All rules scoped under .profile-page so the teacher-profile styles
+   (especially the generic .container / .divider / .name) don't leak. */
+
+.profile-page {
+  background-color: #fcfcfc;
+  min-height: 100vh;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-page .container {
+  width: 100%;
+  max-width: 900px;
+}
+
+/* Header Card Styling */
+.profile-page .header-card {
+  background-color: #d1d5db; /* Light gray background from image */
+  border-radius: 20px;
+  padding: 40px;
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.profile-page .profile-img-wrapper {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid #999;
+}
+
+.profile-page .profile-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-page .info-section {
+  flex: 1;
+}
+
+.profile-page .name {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.profile-page .divider {
+  border: none;
+  border-top: 2px solid #b34a3b; /* Reddish line from design */
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.profile-page .role {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #222;
+}
+
+.profile-page .department {
+  color: #444;
+  margin-bottom: 20px;
+}
+
+.profile-page .contact-pills {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.profile-page .pill {
+  background-color: rgba(255, 255, 255, 0.6);
+  padding: 8px 15px;
+  border-radius: 8px;
+  display: inline-block;
+  width: fit-content;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.profile-page .social-links {
+  display: flex;
+  gap: 15px;
+}
+
+.profile-page .social-icon {
+  background-color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+/* Accordion Section Styling */
+.profile-page .accordion-list {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.profile-page .accordion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #ddd;
+  color: #555;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.profile-page .accordion-item:last-child {
+  border-bottom: none;
+}
+
+.profile-page .accordion-item:hover {
+  background-color: #f0f0f0;
+}
+
+.profile-page .chevron {
+  color: #333;
+}

@@ -1,10 +1,3 @@
-/**
- * Faculty-side meeting logic — the lifecycle transitions.
- *
- * Every transition re-reads the meeting and checks both ownership and the
- * current status, so a stale client cannot skip a gate.
- */
-
 import { isValidMarks, isValidSkillSelection } from 'shared';
 import {
   completeMeeting as persistCompletion,
@@ -25,7 +18,6 @@ export function listFacultyMeetings(
   return findMeetingsByFaculty(facultyEmail);
 }
 
-/** A faculty-created meeting skips `pending` — creating it *is* accepting it. */
 export async function createMeeting(
   facultyEmail: string,
   input: Record<string, unknown>
@@ -51,7 +43,6 @@ export async function createMeeting(
   return { success: true, data: { meetingId } };
 }
 
-/** pending -> accepted (gate 1 of 2). */
 export async function acceptMeeting(
   facultyEmail: string,
   meetingId: string
@@ -72,7 +63,6 @@ export async function acceptMeeting(
   return { success: true, data: null };
 }
 
-/** accepted + both parties ready -> ongoing (gate 2 of 2). */
 export async function startMeeting(
   facultyEmail: string,
   meetingId: string
@@ -100,7 +90,6 @@ export async function startMeeting(
   return { success: true, data: null };
 }
 
-/** ongoing -> completed, recording marks and the skills discussed atomically. */
 export async function completeMeeting(
   facultyEmail: string,
   meetingId: string,

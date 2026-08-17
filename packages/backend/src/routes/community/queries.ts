@@ -1,5 +1,3 @@
-/** Query routes: students raise them, their mentor responds. */
-
 import { Router } from 'express';
 import {
   studentOnly,

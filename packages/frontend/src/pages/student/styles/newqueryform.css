@@ -1,0 +1,310 @@
+/* All rules scoped under .raise-query-container. This isolates .info-icon
+   (which the dashboard positions absolutely), plus .form-group / .panel-header
+   which SignUp and other pages also define. */
+
+.raise-query-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 30px;
+  box-sizing: border-box;
+  background-color: #f8f9fa;
+  overflow: hidden;
+}
+
+/* Header */
+.raise-query-container .query-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-shrink: 0;
+}
+
+.raise-query-container .page-title {
+  color: #1a1a1a;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.raise-query-container .info-icon {
+  color: #666;
+  cursor: pointer;
+}
+
+/* Mentor & Action Section */
+.raise-query-container .mentor-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 20px 25px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 25px;
+  flex-shrink: 0;
+}
+
+.raise-query-container .mentor-info-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.raise-query-container .mentor-avatar {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background-color: #2c3e50;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.raise-query-container .mentor-details h3 {
+  font-size: 1.2rem;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+.raise-query-container .mentor-details p {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.raise-query-container .add-new-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #ff8c00;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-weight: 600;
+}
+.raise-query-container .add-new-btn:hover {
+  background-color: #e67e22;
+}
+
+/* Internal Scrollable Query List */
+.raise-query-container .query-list-container {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.raise-query-container .query-list-container::-webkit-scrollbar {
+  width: 6px;
+}
+.raise-query-container .query-list-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.raise-query-container .query-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding-bottom: 30px;
+}
+
+.raise-query-container .loading-text,
+.raise-query-container .empty-state {
+  text-align: center;
+  color: #64748b;
+  padding: 40px;
+  font-size: 1.1rem;
+}
+
+.raise-query-container .query-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #3b82f6;
+  border-left-width: 4px;
+}
+
+.raise-query-container .card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  align-items: center;
+}
+.raise-query-container .date-text {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.raise-query-container .status-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.raise-query-container .status-badge.pending {
+  background: #fff7ed;
+  color: #f97316;
+}
+.raise-query-container .status-badge.resolved {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.raise-query-container .query-subject {
+  font-size: 1.25rem;
+  margin-bottom: 12px;
+  color: #0f172a;
+}
+.raise-query-container .category-tags {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.raise-query-container .tag {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.raise-query-container .tag.outline {
+  background: transparent;
+  border: 1px solid #cbd5e1;
+}
+.raise-query-container .query-body {
+  color: #334155;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* =====================================
+   SLIDING MODAL PANEL
+   ===================================== */
+.raise-query-container .slide-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.raise-query-container .slide-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.raise-query-container .slide-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 450px;
+  max-width: 100vw;
+  background: #ffffff;
+  z-index: 100;
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+.raise-query-container .slide-panel.open {
+  transform: translateX(0);
+}
+
+.raise-query-container .panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.raise-query-container .panel-header h2 {
+  color: #0f172a;
+  font-size: 1.4rem;
+  margin: 0;
+}
+.raise-query-container .close-btn {
+  cursor: pointer;
+  color: #64748b;
+  transition: color 0.2s;
+}
+.raise-query-container .close-btn:hover {
+  color: #ef4444;
+}
+
+.raise-query-container .query-form {
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+}
+.raise-query-container .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.raise-query-container .form-group label {
+  font-weight: 600;
+  color: #334155;
+  font-size: 0.95rem;
+}
+
+.raise-query-container .form-group input,
+.raise-query-container .form-group select,
+.raise-query-container .form-group textarea {
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  font-family: inherit;
+  background-color: #f8fafc;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
+}
+.raise-query-container .form-group input:focus,
+.raise-query-container .form-group select:focus,
+.raise-query-container .form-group textarea:focus {
+  border-color: #ff8c00;
+  background-color: #ffffff;
+}
+
+.raise-query-container .submit-btn {
+  background: #ff8c00;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s;
+}
+.raise-query-container .submit-btn:hover:not(:disabled) {
+  background: #e67e22;
+}
+.raise-query-container .submit-btn:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+}

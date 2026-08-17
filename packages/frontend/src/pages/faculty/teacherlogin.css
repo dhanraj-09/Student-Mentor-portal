@@ -1,0 +1,166 @@
+/* All rules scoped under .auth-wrapper so faculty-login styles never leak
+   into other pages (and vice-versa). */
+
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fafafa;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 20px;
+}
+
+.auth-wrapper .auth-modal {
+  background: #ffffff;
+  width: 100%;
+  max-width: 450px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  padding: 30px;
+}
+
+.auth-wrapper .brand-title {
+  margin: 0;
+}
+
+.auth-wrapper .toggle-container {
+  display: flex;
+  background: #f3f4f6;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  padding: 5px;
+}
+
+.auth-wrapper .toggle-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.auth-wrapper .toggle-btn.active {
+  background: #ffffff;
+  color: #f97316;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Viewport clips to a single form width; the slider inside moves left/right */
+.auth-wrapper .form-viewport {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Twice the viewport width so it can hold both forms side by side */
+.auth-wrapper .form-slider {
+  display: flex;
+  width: 200%;
+  transition: transform 0.4s ease-in-out;
+}
+
+.auth-wrapper .show-login {
+  transform: translateX(0);
+}
+
+.auth-wrapper .show-signup {
+  transform: translateX(-50%);
+}
+
+/*
+   Each form is exactly half the slider (= one viewport width) and is not
+   allowed to grow or shrink. This keeps the two panels aligned so only one
+   shows at a time. min-width:0 stops long inputs forcing the panel wider.
+*/
+.auth-wrapper .auth-form {
+  flex: 0 0 50%;
+  min-width: 0;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-wrapper .auth-form h2 {
+  margin: 0 0 10px 0;
+  font-size: 22px;
+  color: #1f2937;
+  white-space: nowrap;
+}
+
+.auth-wrapper .scrollable-fields {
+  max-height: 350px; /* Prevents modal from getting too tall */
+  overflow-y: auto;
+  padding-right: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-wrapper .scrollable-fields::-webkit-scrollbar {
+  width: 5px;
+}
+.auth-wrapper .scrollable-fields::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 10px;
+}
+
+.auth-wrapper .input-row {
+  display: flex;
+  gap: 10px;
+}
+
+.auth-wrapper .input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+}
+
+.auth-wrapper .input-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.auth-wrapper .input-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.auth-wrapper .input-group input:focus {
+  border-color: #f97316;
+}
+
+.auth-wrapper .action-button {
+  background-color: #f97316;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.auth-wrapper .action-button:hover {
+  background-color: #ea580c;
+}
+
+.auth-wrapper .mt-auto {
+  margin-top: auto;
+}

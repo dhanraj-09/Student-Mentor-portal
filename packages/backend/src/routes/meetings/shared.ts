@@ -46,10 +46,6 @@ const errorResponses: Record<
   NO_SKILLS: { status: 400, message: 'Select at least one skill discussed' },
 };
 
-/**
- * Shared by all three meeting routers. `detail` carries the state-specific
- * message (e.g. which status the meeting is actually in) when present.
- */
 export function sendMeetingError(
   res: Response,
   code: MeetingErrorCode,
@@ -73,7 +69,6 @@ router.put(
   '/meetings/:meeting_id/ready',
   authenticated,
   asyncHandler(async (req, res) => {
-    // Defaults to marking ready; only an explicit `false` un-marks.
     const ready = req.body?.ready !== false;
     const result = await setReadiness(req.user!, req.params.meeting_id, ready);
 
@@ -82,11 +77,9 @@ router.put(
       return;
     }
 
-    res
-      .status(200)
-      .json({
-        message: result.data.ready ? 'Marked ready' : 'Marked not ready',
-      });
+    res.status(200).json({
+      message: result.data.ready ? 'Marked ready' : 'Marked not ready',
+    });
   })
 );
 

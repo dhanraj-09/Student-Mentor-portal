@@ -1,19 +1,11 @@
-/**
- * Public authentication routes, mounted at /auth.
- *
- * Token handling is deliberately split: the short-lived access token is
- * returned in the body (the client keeps it in memory only), while the
- * long-lived refresh token goes into an httpOnly, path-scoped cookie that
- * JavaScript can never read.
- */
-
 import { Router } from 'express';
 import type { CookieOptions, Response } from 'express';
 import {
   REFRESH_COOKIE_MAX_AGE_MS,
-  REFRESH_COOKIE_NAME,
-  REFRESH_COOKIE_PATH,
+  REFRESH_COOKIE_NAMES,
+  REFRESH_COOKIE_PATHS,
 } from 'shared';
+import type { UserType } from 'shared';
 import { config } from '../../config.js';
 import {
   loginLimiter,
@@ -31,7 +23,6 @@ import { asyncHandler } from '../../utils/helpers.js';
 
 const router = Router();
 
-/** Maps a service error code onto its HTTP status and client-facing message. */
 const errorResponses: Record<
   AuthErrorCode,
   { status: number; message: string }
@@ -52,16 +43,15 @@ function sendError(res: Response, code: AuthErrorCode): void {
   res.status(status).json({ error: message });
 }
 
-const refreshCookieOptions: CookieOptions = {
-  httpOnly: true,
-  // HTTPS-only in production; plain HTTP is needed for local development.
-  secure: config.isProduction,
-  sameSite: 'lax',
-  path: REFRESH_COOKIE_PATH,
-  maxAge: REFRESH_COOKIE_MAX_AGE_MS,
-};
-
-// ===== Registration =====
+function refreshCookieOptions(role: UserType): CookieOptions {
+  return {
+    httpOnly: true,
+    secure: config.isProduction,
+    sameSite: 'lax',
+    path: REFRESH_COOKIE_PATHS[role],
+    maxAge: REFRESH_COOKIE_MAX_AGE_MS,
+  };
+}
 
 router.post(
   '/register-student',
@@ -89,8 +79,6 @@ router.post(
   })
 );
 
-// ===== Login =====
-
 router.post(
   '/login-student',
   loginLimiter,
@@ -105,7 +93,11 @@ router.post(
     }
 
     const { accessToken, refreshToken, student } = result.data;
-    res.cookie(REFRESH_COOKIE_NAME, refreshToken, refreshCookieOptions);
+    res.cookie(
+      REFRESH_COOKIE_NAMES.student,
+      refreshToken,
+      refreshCookieOptions('student')
+    );
     res.status(200).json({ message: 'Login successful', accessToken, student });
   })
 );
@@ -121,27 +113,36 @@ router.post(
     }
 
     const { accessToken, refreshToken, faculty } = result.data;
-    res.cookie(REFRESH_COOKIE_NAME, refreshToken, refreshCookieOptions);
+    res.cookie(
+      REFRESH_COOKIE_NAMES.faculty,
+      refreshToken,
+      refreshCookieOptions('faculty')
+    );
     res.status(200).json({ message: 'Login successful', accessToken, faculty });
   })
 );
 
-// ===== Session lifecycle =====
+// Per-role refresh/logout endpoints. The path must match the cookie's path so
+// the browser attaches that role's refresh cookie (and only that one).
+const ROLES: UserType[] = ['student', 'faculty'];
+for (const role of ROLES) {
+  router.post(`/refresh-token/${role}`, (req, res) => {
+    const result = refreshAccessToken(
+      req.cookies?.[REFRESH_COOKIE_NAMES[role]]
+    );
+    if (!result.success) {
+      sendError(res, result.code);
+      return;
+    }
+    res.status(200).json(result.data);
+  });
 
-router.post('/refresh-token', (req, res) => {
-  // The refresh token travels in the cookie, never the request body.
-  const result = refreshAccessToken(req.cookies?.[REFRESH_COOKIE_NAME]);
-  if (!result.success) {
-    sendError(res, result.code);
-    return;
-  }
-  res.status(200).json(result.data);
-});
-
-router.post('/logout', (_req, res) => {
-  // Path must match how the cookie was set or the browser keeps it.
-  res.clearCookie(REFRESH_COOKIE_NAME, { path: REFRESH_COOKIE_PATH });
-  res.status(200).json({ message: 'Logged out successfully' });
-});
+  router.post(`/logout/${role}`, (_req, res) => {
+    res.clearCookie(REFRESH_COOKIE_NAMES[role], {
+      path: REFRESH_COOKIE_PATHS[role],
+    });
+    res.status(200).json({ message: 'Logged out successfully' });
+  });
+}
 
 export default router;
