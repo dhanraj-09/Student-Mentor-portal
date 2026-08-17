@@ -1,0 +1,386 @@
+/* All rules scoped under .sm-container. The student main-content already
+   provides padding + scroll, so this container is a plain flow block. */
+
+.sm-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.sm-container .sm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.sm-container .sm-header h1 {
+  font-size: 1.9rem;
+  font-weight: 800;
+  margin: 0 0 6px;
+  color: #1a1a1a;
+}
+.sm-container .sm-header p {
+  color: #666;
+  margin: 0;
+  font-size: 1rem;
+}
+.sm-container .sm-new-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  background: #ff8c00;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.sm-container .sm-new-btn:hover:not(:disabled) {
+  background: #e67e22;
+}
+.sm-container .sm-new-btn:disabled {
+  background: #e5c8a8;
+  cursor: not-allowed;
+}
+
+.sm-container .sm-notice {
+  background: #fff7ed;
+  color: #b45309;
+  border: 1px solid #fed7aa;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 18px;
+  font-size: 0.92rem;
+}
+.sm-container .sm-error {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 18px;
+  font-size: 0.9rem;
+}
+
+.sm-container .sm-tabs {
+  display: inline-flex;
+  background: #f1f1f1;
+  padding: 5px;
+  border-radius: 10px;
+  gap: 5px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+.sm-container .sm-tabs button {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.sm-container .sm-tabs button.active {
+  background: #ff8c00;
+  color: #fff;
+}
+
+.sm-container .sm-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 60px;
+  color: #6b7280;
+  text-align: center;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+}
+.sm-container .sm-empty p {
+  margin: 0;
+}
+
+.sm-container .sm-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
+}
+.sm-container .sm-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+.sm-container .sm-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+.sm-container .sm-card-head h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  word-break: break-all;
+}
+.sm-container .sm-sub {
+  font-size: 0.82rem;
+  color: #9ca3af;
+}
+
+.sm-container .sm-reason {
+  margin: 0;
+  color: #374151;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  background: #f9fafb;
+  border: 1px solid #f1f1f1;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.sm-container .sm-hint {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #6b7280;
+}
+.sm-container .sm-live {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.sm-container .sm-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  font-size: 0.82rem;
+  color: #9ca3af;
+}
+.sm-container .sm-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.sm-container .sm-done {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+/* Readiness */
+.sm-container .sm-ready-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #fff8f0;
+  border: 1px solid #ffedd5;
+  border-radius: 8px;
+}
+.sm-container .sm-ready-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #4b5563;
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.sm-container .sm-ready-toggle:hover:not(:disabled) {
+  border-color: #16a34a;
+}
+.sm-container .sm-ready-toggle.on {
+  background: #f0fdf4;
+  border-color: #16a34a;
+  color: #16a34a;
+}
+.sm-container .sm-ready-toggle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.sm-container .sm-ready-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #9ca3af;
+}
+.sm-container .sm-ready-badge.on {
+  color: #16a34a;
+}
+
+/* Pills */
+.sm-container .sm-pill {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+.sm-container .sm-pill.yellow {
+  background: #fff7ed;
+  color: #ea580c;
+}
+.sm-container .sm-pill.gray {
+  background: #eef0f3;
+  color: #4b5563;
+}
+.sm-container .sm-pill.blue {
+  background: #e6f1fb;
+  color: #185fa5;
+}
+.sm-container .sm-pill.green {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+/* Slide-over request panel */
+.sm-container .sm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 199;
+}
+.sm-container .sm-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+.sm-container .sm-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 440px;
+  max-width: 100vw;
+  background: #fff;
+  box-shadow: -8px 0 30px rgba(0, 0, 0, 0.15);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+}
+.sm-container .sm-panel.open {
+  transform: translateX(0);
+}
+.sm-container .sm-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 25px;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
+}
+.sm-container .sm-panel-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #1a1a1a;
+}
+.sm-container .sm-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  display: flex;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.sm-container .sm-close:hover {
+  color: #ef4444;
+  background: #fef2f2;
+}
+.sm-container .sm-panel-body {
+  padding: 25px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sm-container .sm-label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+}
+.sm-container .sm-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  resize: vertical;
+  background: #f8fafc;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+.sm-container .sm-textarea:focus {
+  border-color: #ff8c00;
+  background: #fff;
+}
+.sm-container .sm-panel-error {
+  color: #dc2626;
+  font-size: 0.9rem;
+  margin: 4px 0 0;
+}
+.sm-container .sm-panel-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 18px 25px;
+  border-top: 1px solid #eee;
+  flex-shrink: 0;
+}
+.sm-container .sm-cancel {
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  color: #4b5563;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.sm-container .sm-cancel:hover {
+  background: #f3f4f6;
+}
+.sm-container .sm-save {
+  background: #ff8c00;
+  border: none;
+  color: #fff;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.sm-container .sm-save:hover:not(:disabled) {
+  background: #e67e22;
+}
+.sm-container .sm-save:disabled {
+  background: #e5c8a8;
+  cursor: not-allowed;
+}

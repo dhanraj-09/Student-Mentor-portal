@@ -1,10 +1,3 @@
-/**
- * Typed, validated application configuration.
- *
- * Reads the environment once at startup and fails fast with a clear message if
- * a required variable is missing, rather than surfacing an obscure error later.
- */
-
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';

@@ -1,5 +1,3 @@
-/** Mentor assignment logic. */
-
 import { assignStudentToFaculty } from '../../models/community/index.js';
 import {
   findStudentsByFaculty,
@@ -22,12 +20,6 @@ export function listAssignedStudents(
   return findStudentsByFaculty(facultyEmail);
 }
 
-/**
- * Assigns a student to the requesting faculty member.
- *
- * `targetEmail` comes from the request body; it must match the email in the
- * JWT so a faculty member cannot assign mentees to a colleague.
- */
 export async function assignStudent(
   facultyEmail: string,
   registrationNoInput: unknown,

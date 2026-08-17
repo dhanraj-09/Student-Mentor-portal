@@ -1,10 +1,3 @@
-/**
- * Credential lookups and account creation.
- *
- * `password_hash` never leaves this layer except to the auth service, which
- * compares it and discards it — it is never included in an API response.
- */
-
 import type { RowDataPacket } from 'mysql2/promise';
 import { mutate, queryOne } from '../shared/index.js';
 
@@ -62,7 +55,6 @@ export function findFacultyCredentials(
   );
 }
 
-/** Throws a duplicate-entry error if the registration number already exists. */
 export async function insertStudent(student: NewStudent): Promise<void> {
   await mutate(
     `INSERT INTO student(name, registration_no, degree, branch, year, gender, dob, linked_in, github, password_hash)
@@ -82,7 +74,6 @@ export async function insertStudent(student: NewStudent): Promise<void> {
   );
 }
 
-/** Throws a duplicate-entry error if the email is already registered. */
 export async function insertFaculty(faculty: NewFaculty): Promise<void> {
   await mutate(
     `INSERT INTO faculty(name, email, designation, department, phone_number, linked_in, muj_page, password_hash)

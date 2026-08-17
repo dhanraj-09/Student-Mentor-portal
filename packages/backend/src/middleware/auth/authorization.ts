@@ -1,8 +1,3 @@
-/**
- * Role gates. Each runs after `authenticate`, so the composed `studentOnly` /
- * `facultyOnly` arrays below are what routes actually mount.
- */
-
 import type { RequestHandler } from 'express';
 import { authenticate } from './authentication.js';
 
@@ -22,7 +17,6 @@ export const requireFaculty: RequestHandler = (req, res, next) => {
   next();
 };
 
-/** Any authenticated user, regardless of role. */
 export const authenticated: RequestHandler[] = [authenticate];
 
 export const studentOnly: RequestHandler[] = [authenticate, requireStudent];

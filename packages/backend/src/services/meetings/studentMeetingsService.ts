@@ -1,5 +1,3 @@
-/** Student-side meeting logic: requesting a meeting and listing your own. */
-
 import { isNonEmptyString } from 'shared';
 import {
   findMeetingsByStudent,
@@ -30,11 +28,6 @@ export function listStudentMeetings(
   return findMeetingsByStudent(registrationNo);
 }
 
-/**
- * Raises a meeting request against the student's assigned mentor. The mentor is
- * read from the student record rather than the request body, so a student
- * cannot request a meeting with an arbitrary faculty member.
- */
 export async function requestMeeting(
   studentRegistrationNo: string,
   input: Record<string, unknown>

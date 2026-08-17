@@ -1,11 +1,3 @@
-/**
- * Faculty profile route.
- *
- * Readable by any authenticated user rather than the faculty member alone: a
- * student needs to display their assigned mentor's details. Only public
- * directory columns are selected, so nothing sensitive is exposed.
- */
-
 import { Router } from 'express';
 import { authenticated } from '../../middleware/auth/authorization.js';
 import { getFacultyProfile } from '../../services/profile/index.js';

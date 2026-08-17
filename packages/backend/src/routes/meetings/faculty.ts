@@ -1,5 +1,3 @@
-/** Faculty-facing meeting routes — creation and the lifecycle transitions. */
-
 import { Router } from 'express';
 import { facultyOnly } from '../../middleware/auth/authorization.js';
 import {
