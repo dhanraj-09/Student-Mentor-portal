@@ -42,7 +42,6 @@ router.get(
   '/faculty/get-student',
   facultyOnly,
   asyncHandler(async (req, res) => {
-    // The faculty email comes from the JWT, never a query parameter.
     const faculty = getFacultyUser(req);
     res.status(200).json(await listAssignedStudents(faculty.email));
   })

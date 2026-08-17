@@ -1,0 +1,228 @@
+/* All rules scoped under .sf-container so the faculty "Students" page
+   styles stay isolated from the rest of the app. */
+
+.sf-container {
+  flex: 1;
+  background-color: #f4f6f8;
+  padding: 0 60px 50px 60px;
+  height: 100vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* TOP BAR */
+.sf-container .sf-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  margin-bottom: 20px;
+}
+
+.sf-container .breadcrumb {
+  font-size: 0.9rem;
+  color: #888;
+  margin: 0;
+}
+
+.sf-container .sf-top-right {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.sf-container .sf-search {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  padding: 8px 15px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 250px;
+}
+
+.sf-container .sf-search input {
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.sf-container .sf-icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #4b5563;
+}
+
+/* HEADER */
+.sf-container .sf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40px;
+}
+
+.sf-container .sf-header-text h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 0 0 10px 0;
+  color: #111;
+}
+
+.sf-container .sf-header-text p {
+  color: #666;
+  font-size: 1.1rem;
+  max-width: 500px;
+}
+
+.sf-container .sf-tabs {
+  background: #ebeef1;
+  padding: 5px;
+  border-radius: 10px;
+  display: flex;
+  gap: 5px;
+}
+
+.sf-container .sf-tabs button {
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sf-container .sf-tabs button.active {
+  background: #92400e; /* Darker brown/orange from image */
+  color: #fff;
+}
+
+/* GRID */
+.sf-container .sf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+.sf-container .student-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 15px;
+  padding: 35px 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.sf-container .student-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.sf-container .avatar-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.sf-container .avatar-circle {
+  width: 80px;
+  height: 80px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sf-container .status-dot {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+.sf-container .status-dot.online {
+  background: #22c55e;
+}
+
+.sf-container .card-info h3 {
+  margin: 0 0 5px 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.sf-container .reg-no {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.sf-container .academic-info {
+  font-size: 0.95rem;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.sf-container .progress-section {
+  width: 100%;
+  margin: 25px 0;
+}
+
+.sf-container .progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #111;
+  margin-bottom: 8px;
+}
+
+.sf-container .progress-bar-bg {
+  width: 100%;
+  height: 6px;
+  background: #f3f4f6;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.sf-container .progress-bar-fill {
+  height: 100%;
+  background: #92400e;
+}
+
+.sf-container .btn-view-profile {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #f3f4f6;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #92400e;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sf-container .btn-view-profile:hover {
+  background: #fff7ed;
+  border-color: #ffedd5;
+}
+
+.sf-container .empty-cohort {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 50px;
+  color: #888;
+  font-style: italic;
+}

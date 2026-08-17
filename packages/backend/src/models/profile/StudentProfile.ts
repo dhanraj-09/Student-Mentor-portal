@@ -1,5 +1,3 @@
-/** Student profile reads and writes. */
-
 import type { RowDataPacket } from 'mysql2/promise';
 import { mutate, query, queryOne } from '../shared/index.js';
 
@@ -16,7 +14,6 @@ export interface StudentProfileRow extends RowDataPacket {
   assigned_faculty_email: string | null;
 }
 
-/** Editable profile fields. Deliberately excludes `assigned_faculty_email`. */
 export interface StudentProfileUpdate {
   name: string | null;
   degree: string | null;
@@ -67,7 +64,6 @@ export async function updateStudentProfile(
   return result.affectedRows;
 }
 
-/** Students with no mentor yet — the pool a faculty can claim from. */
 export function findUnassignedStudents(): Promise<StudentProfileRow[]> {
   return query<StudentProfileRow>(
     `SELECT registration_no, name, degree, branch, year, gender, dob, linked_in, github
@@ -77,7 +73,6 @@ export function findUnassignedStudents(): Promise<StudentProfileRow[]> {
   );
 }
 
-/** Students mentored by a given faculty member. */
 export function findStudentsByFaculty(
   facultyEmail: string
 ): Promise<StudentProfileRow[]> {

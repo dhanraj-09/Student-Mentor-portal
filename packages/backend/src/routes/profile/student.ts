@@ -1,10 +1,3 @@
-/**
- * Student profile routes.
- *
- * Both are ownership-gated: the registration number in the JWT must match the
- * `:registration_no` in the path, so a valid token cannot read another student.
- */
-
 import { Router } from 'express';
 import { studentOwnership } from '../../middleware/auth/ownership.js';
 import {

@@ -1,0 +1,563 @@
+/* ================================================================
+   Scoping strategy:
+   - Student layout + sidebar chrome -> .dashboard-container  (shared;
+     every student page relies on these rules, so they are unchanged)
+   - Student dashboard page content  -> .sd-*  (isolated to /dashboard)
+   ================================================================ */
+
+/* ---------- 1. LAYOUT + SIDEBAR (shared student chrome) ---------- */
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  background-color: #f4f4f4;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.dashboard-container .sidebar {
+  width: 260px;
+  background-color: #ff8c00; /* Vibrant Orange */
+  color: white;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-container .logo {
+  font-size: 2rem;
+  font-family: serif;
+  margin-bottom: 50px;
+  letter-spacing: 2px;
+}
+
+.dashboard-container .nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex: 1;
+}
+
+.dashboard-container .nav-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.dashboard-container .nav-item.active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.dashboard-container .nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dashboard-container .settings {
+  margin-top: auto;
+}
+
+.dashboard-container .btn-logout {
+  background-color: #ffffff00;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Main Content Area (shared by all student pages) */
+.dashboard-container .main-content {
+  flex: 1;
+  padding: 32px 40px;
+  position: relative;
+  overflow-y: auto;
+}
+
+/* ---------- 2. DASHBOARD PAGE CONTENT (redesign) ---------- */
+.sd-page {
+  --sd-orange: #ff8c00;
+  --sd-orange-2: #ff6f00;
+  --sd-ink: #1f2937;
+  --sd-muted: #6b7280;
+  --sd-faint: #9ca3af;
+  --sd-line: #eef0f3;
+  --sd-card-shadow: 0 6px 22px rgba(17, 24, 39, 0.06);
+
+  max-width: 1120px;
+  margin: 0 auto;
+  color: var(--sd-ink);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sd-loading {
+  padding: 60px;
+  text-align: center;
+  color: #777;
+}
+
+/* Top bar */
+.sd-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.sd-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--sd-faint);
+  font-size: 0.9rem;
+}
+
+.sd-breadcrumb-current {
+  color: var(--sd-ink);
+  font-weight: 600;
+}
+
+.sd-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sd-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid var(--sd-line);
+  border-radius: 12px;
+  padding: 8px 14px;
+  color: var(--sd-faint);
+  min-width: 240px;
+}
+
+.sd-search input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.9rem;
+  color: var(--sd-ink);
+  width: 100%;
+}
+
+.sd-icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--sd-line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--sd-muted);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.sd-icon-btn:hover {
+  color: var(--sd-orange);
+  border-color: #ffd9a8;
+}
+
+.sd-icon-dot {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--sd-orange);
+}
+
+/* Hero banner */
+.sd-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  background: #fff;
+  border: 1px solid var(--sd-line);
+  border-radius: 22px;
+  padding: 32px;
+  margin-bottom: 26px;
+  box-shadow: var(--sd-card-shadow);
+  overflow: hidden;
+}
+
+.sd-hero-decoration {
+  position: absolute;
+  top: -60px;
+  right: -40px;
+  width: 260px;
+  height: 260px;
+  background: linear-gradient(135deg, #ffb257, var(--sd-orange));
+  opacity: 0.14;
+  border-radius: 46% 54% 40% 60% / 52% 44% 56% 48%;
+  pointer-events: none;
+}
+
+.sd-hero-avatar {
+  flex-shrink: 0;
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #ffb257, var(--sd-orange-2));
+  box-shadow: 0 8px 20px rgba(255, 140, 0, 0.35);
+}
+
+.sd-hero-info {
+  flex: 1;
+  z-index: 1;
+}
+
+.sd-hero-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.sd-hero-name h1 {
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.sd-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.sd-badge-active {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.sd-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sd-hero-meta li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--sd-muted);
+  font-size: 0.92rem;
+}
+
+.sd-hero-meta svg {
+  color: var(--sd-orange);
+}
+
+.sd-meta-key {
+  color: var(--sd-orange);
+  font-weight: 700;
+}
+
+/* Buttons */
+.sd-btn-primary {
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: linear-gradient(135deg, #ffa62e, var(--sd-orange-2));
+  color: #fff;
+  border: none;
+  padding: 11px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(255, 140, 0, 0.3);
+  transition: 0.2s;
+}
+
+.sd-btn-primary:hover {
+  transform: translateY(-1px);
+}
+
+.sd-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff7ed;
+  color: var(--sd-orange-2);
+  border: 1px solid #ffe0bd;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.sd-btn-ghost:hover {
+  background: #ffedd5;
+}
+
+.sd-link-btn {
+  background: none;
+  border: none;
+  color: var(--sd-orange-2);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* Grid */
+.sd-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+.sd-col-main,
+.sd-col-side {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.sd-card {
+  background: #fff;
+  border: 1px solid var(--sd-line);
+  border-radius: 18px;
+  padding: 26px;
+  box-shadow: var(--sd-card-shadow);
+}
+
+.sd-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.sd-card-head h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.sd-about-body {
+  color: var(--sd-muted);
+  line-height: 1.65;
+  font-size: 0.92rem;
+  margin: 0;
+}
+
+/* Mentor */
+.sd-mentor-body {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.sd-mentor-avatar {
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #94a3b8, #475569);
+}
+
+.sd-mentor-info h4 {
+  font-size: 1.05rem;
+  margin: 0 0 3px;
+}
+
+.sd-mentor-info > p {
+  color: var(--sd-muted);
+  font-size: 0.88rem;
+  margin: 0 0 10px;
+}
+
+.sd-mentor-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sd-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #f3f4f6;
+  color: var(--sd-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+.sd-chip-accent {
+  background: #fff7ed;
+  color: var(--sd-orange-2);
+}
+
+.sd-mentor-empty p {
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.sd-mentor-empty span {
+  color: var(--sd-faint);
+  font-size: 0.85rem;
+}
+
+/* Right column */
+.sd-side-label {
+  color: var(--sd-faint);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+.sd-status {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--sd-line);
+  border-radius: 16px;
+  padding: 16px;
+  cursor: pointer;
+  box-shadow: var(--sd-card-shadow);
+  transition: 0.2s;
+}
+
+.sd-status:hover {
+  border-color: #ffd9a8;
+  transform: translateY(-1px);
+}
+
+.sd-status-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+}
+
+.sd-status-icon-amber {
+  background: #fff7ed;
+  color: var(--sd-orange-2);
+}
+
+.sd-status-icon-blue {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.sd-status-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.sd-status-key {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--sd-faint);
+}
+
+.sd-status-val {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--sd-ink);
+}
+
+.sd-status-chevron {
+  color: var(--sd-faint);
+}
+
+/* CGPA */
+.sd-cgpa {
+  padding: 22px 24px;
+}
+
+.sd-cgpa-value {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 10px 0 16px;
+}
+
+.sd-cgpa-value strong {
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: var(--sd-orange-2);
+  line-height: 1;
+}
+
+.sd-cgpa-value span {
+  color: var(--sd-faint);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.sd-cgpa-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  overflow: hidden;
+}
+
+.sd-cgpa-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffb257, var(--sd-orange-2));
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .sd-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sd-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sd-search {
+    min-width: 0;
+  }
+}

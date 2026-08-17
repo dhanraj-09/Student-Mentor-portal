@@ -1,10 +1,3 @@
-/**
- * Verifies the access token and attaches the decoded payload to `req.user`.
- *
- * A 401 here is the frontend's signal to silently refresh and retry, so the
- * expired case is reported distinctly from a malformed/forged token.
- */
-
 import type { RequestHandler } from 'express';
 import { verifyAccessToken } from '../../utils/jwt.js';
 

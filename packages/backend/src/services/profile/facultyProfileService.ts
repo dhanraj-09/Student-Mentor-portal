@@ -1,5 +1,3 @@
-/** Faculty profile logic. */
-
 import { findFacultyProfile } from '../../models/profile/index.js';
 import type { FacultyProfileRow } from '../../models/profile/index.js';
 import type { Result } from '../../utils/helpers.js';

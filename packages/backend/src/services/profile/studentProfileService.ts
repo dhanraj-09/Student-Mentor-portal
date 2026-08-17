@@ -1,5 +1,3 @@
-/** Student profile logic. */
-
 import {
   findStudentProfile,
   updateStudentProfile as persistStudentProfile,

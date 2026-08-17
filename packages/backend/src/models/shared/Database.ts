@@ -1,10 +1,3 @@
-/**
- * MySQL connection pool (Aiven, SSL) and the query helpers every model uses.
- *
- * Uses the promise API rather than callbacks so the service layer can be
- * written with async/await.
- */
-
 import { readFileSync } from 'node:fs';
 import mysql from 'mysql2/promise';
 import type {
@@ -17,7 +10,6 @@ import { config } from '../../config.js';
 
 let pool: Pool | null = null;
 
-/** Lazily creates the pool so importing this module never opens a connection. */
 export function getPool(): Pool {
   if (pool === null) {
     pool = mysql.createPool({
@@ -38,7 +30,6 @@ export function getPool(): Pool {
   return pool;
 }
 
-/** Runs a SELECT and returns the rows. */
 export async function query<T extends RowDataPacket = RowDataPacket>(
   sql: string,
   params: unknown[] = []
@@ -47,7 +38,6 @@ export async function query<T extends RowDataPacket = RowDataPacket>(
   return rows;
 }
 
-/** Runs a SELECT expected to match at most one row. */
 export async function queryOne<T extends RowDataPacket = RowDataPacket>(
   sql: string,
   params: unknown[] = []
@@ -56,7 +46,6 @@ export async function queryOne<T extends RowDataPacket = RowDataPacket>(
   return rows.length > 0 ? rows[0] : null;
 }
 
-/** Runs an INSERT/UPDATE/DELETE and returns the result header. */
 export async function mutate(
   sql: string,
   params: unknown[] = []
@@ -65,10 +54,6 @@ export async function mutate(
   return result;
 }
 
-/**
- * Runs `work` inside a transaction, committing on success and rolling back on
- * any thrown error. The connection is always released.
- */
 export async function withTransaction<T>(
   work: (connection: PoolConnection) => Promise<T>
 ): Promise<T> {
@@ -86,7 +71,6 @@ export async function withTransaction<T>(
   }
 }
 
-/** True when an error came from violating a UNIQUE/PRIMARY KEY constraint. */
 export function isDuplicateEntryError(error: unknown): boolean {
   return (
     typeof error === 'object' &&
@@ -95,13 +79,11 @@ export function isDuplicateEntryError(error: unknown): boolean {
   );
 }
 
-/** Verifies the database is reachable. Called once at startup. */
 export async function verifyConnection(): Promise<void> {
   const connection = await getPool().getConnection();
   connection.release();
 }
 
-/** Closes the pool (used on graceful shutdown). */
 export async function closePool(): Promise<void> {
   if (pool !== null) {
     await pool.end();

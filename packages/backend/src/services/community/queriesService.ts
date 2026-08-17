@@ -1,5 +1,3 @@
-/** Query raising and responding logic. */
-
 import { isNonEmptyString, isQueryStatus } from 'shared';
 import type { QueryStatus } from 'shared';
 import {
@@ -26,7 +24,6 @@ export function listFacultyQueries(facultyEmail: string): Promise<QueryRow[]> {
   return findQueriesByFaculty(facultyEmail);
 }
 
-/** Raises a query. A student may only create queries under their own id. */
 export async function createQuery(
   studentRegistrationNo: string,
   input: Record<string, unknown>
@@ -62,7 +59,6 @@ export async function createQuery(
   return { success: true, data: { queryId } };
 }
 
-/** Records a faculty response. Only the mentor of that student may respond. */
 export async function respondToQuery(
   facultyEmail: string,
   queryId: string,

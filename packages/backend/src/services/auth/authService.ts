@@ -1,11 +1,3 @@
-/**
- * Authentication logic: registration, login and access-token refresh.
- *
- * Services stay HTTP-agnostic — they return a discriminated result and the
- * route layer maps the error code to a status code. Registration inputs are
- * typed as `unknown` because they arrive straight from the request body.
- */
-
 import bcrypt from 'bcryptjs';
 import { BCRYPT_SALT_ROUNDS, isValidPassword } from 'shared';
 import {
@@ -45,7 +37,6 @@ export interface FacultySession {
   faculty: { email: string; name: string };
 }
 
-/** Raw request body — every field is validated/coerced before use. */
 export type RegistrationInput = Record<string, unknown>;
 
 export async function registerStudent(
@@ -142,7 +133,6 @@ export async function loginStudent(
 
   const student = await findStudentCredentials(registrationNo);
 
-  // Same response whether the account is missing or the password is wrong, so
   // the endpoint cannot be used to enumerate registration numbers.
   if (
     student === null ||
@@ -201,7 +191,6 @@ export async function loginFaculty(
   };
 }
 
-/** Exchanges a valid refresh token for a fresh access token. */
 export function refreshAccessToken(token: string | undefined): ServiceResult<{
   accessToken: string;
 }> {
