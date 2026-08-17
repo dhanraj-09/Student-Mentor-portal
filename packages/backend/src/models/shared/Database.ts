@@ -86,6 +86,15 @@ export async function withTransaction<T>(
   }
 }
 
+/** True when an error came from violating a UNIQUE/PRIMARY KEY constraint. */
+export function isDuplicateEntryError(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    (error as { code?: unknown }).code === 'ER_DUP_ENTRY'
+  );
+}
+
 /** Verifies the database is reachable. Called once at startup. */
 export async function verifyConnection(): Promise<void> {
   const connection = await getPool().getConnection();
