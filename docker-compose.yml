@@ -1,23 +1,6 @@
+# The database is MySQL hosted on Aiven (remote), so no local DB service runs
+# here — the backend connects out to DB_HOST over SSL using packages/backend/ca.pem.
 services:
-  db:
-    image: postgres:16-alpine
-    container_name: student_mentor_db
-    environment:
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-      POSTGRES_DB: ${DB_NAME:-student_mentor}
-    ports:
-      - '${DB_PORT:-5432}:5432'
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-postgres}']
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - student_mentor_network
-
   backend:
     build:
       context: .
@@ -27,18 +10,20 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV:-development}
       PORT: 8080
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USER: ${DB_USER:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:-postgres}
-      DB_NAME: ${DB_NAME:-student_mentor}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME:-defaultdb}
+      DB_SSL_CA: ${DB_SSL_CA:-ca.pem}
+      DB_SSL_REJECT_UNAUTHORIZED: ${DB_SSL_REJECT_UNAUTHORIZED:-true}
       JWT_SECRET: ${JWT_SECRET:-dev-only-secret}
+      REFRESH_SECRET: ${REFRESH_SECRET:-dev-only-refresh-secret}
+      ACCESS_TOKEN_EXPIRY: ${ACCESS_TOKEN_EXPIRY:-30m}
+      REFRESH_TOKEN_EXPIRY: ${REFRESH_TOKEN_EXPIRY:-7d}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:5173}
     ports:
       - '${PORT:-8080}:8080'
-    depends_on:
-      db:
-        condition: service_healthy
     volumes:
       - ./packages/backend/src:/app/packages/backend/src
       - ./packages/shared/src:/app/packages/shared/src
@@ -66,9 +51,6 @@ services:
       - backend
     networks:
       - student_mentor_network
-
-volumes:
-  postgres_data:
 
 networks:
   student_mentor_network:
