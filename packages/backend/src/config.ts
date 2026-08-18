@@ -56,8 +56,11 @@ export const config = {
     password: requireEnv('DB_PASSWORD'),
     database: requireEnv('DB_NAME'),
     connectionLimit: numberEnv('DB_CONNECTION_LIMIT', 10),
-    /** Aiven requires SSL; the CA lives at the backend package root (git-ignored). */
+    /** Aiven requires SSL. Locally the CA lives at the backend package root
+     *  (git-ignored) and is read from disk; in a deploy where no file exists
+     *  (e.g. Railway) paste the cert contents into DB_SSL_CA_PEM instead. */
     sslCaPath: path.resolve(packageRoot, optionalEnv('DB_SSL_CA', 'ca.pem')),
+    sslCaPem: optionalEnv('DB_SSL_CA_PEM', ''),
     sslRejectUnauthorized: booleanEnv('DB_SSL_REJECT_UNAUTHORIZED', true),
   },
 

@@ -12,6 +12,12 @@ let pool: Pool | null = null;
 
 export function getPool(): Pool {
   if (pool === null) {
+    // Prefer the inline cert (DB_SSL_CA_PEM) for deploys with no file on disk;
+    // otherwise read ca.pem from the backend package root.
+    const ca =
+      config.db.sslCaPem !== ''
+        ? config.db.sslCaPem
+        : readFileSync(config.db.sslCaPath);
     pool = mysql.createPool({
       host: config.db.host,
       port: config.db.port,
@@ -19,7 +25,7 @@ export function getPool(): Pool {
       password: config.db.password,
       database: config.db.database,
       ssl: {
-        ca: readFileSync(config.db.sslCaPath),
+        ca,
         rejectUnauthorized: config.db.sslRejectUnauthorized,
       },
       waitForConnections: true,
