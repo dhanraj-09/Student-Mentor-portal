@@ -23,6 +23,9 @@ export const apiLimiter = rateLimit({
   message: rejection('Too many requests. Please try again later'),
   standardHeaders: true,
   legacyHeaders: false,
+  // Never rate-limit CORS preflight requests — a 429 on an OPTIONS carries no
+  // CORS headers and surfaces in the browser as a misleading "CORS error".
+  skip: (req) => req.method === 'OPTIONS',
 });
 
 export const loginLimiter = rateLimit({
