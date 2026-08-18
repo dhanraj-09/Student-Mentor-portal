@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import FacultyLayout from './layouts/FacultyLayout';
 import StudentLayout from './layouts/StudentLayout';
 import FacultyDashboard from './pages/faculty/DashboardFaculty';
@@ -40,6 +41,7 @@ function App() {
 
         <Route path="/faculty-profile" element={<TeacherProfile />} />
       </Routes>
+      <SpeedInsights />
     </Router>
   );
 }
