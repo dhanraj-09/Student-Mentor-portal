@@ -12,7 +12,11 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "format": "prettier --write .",
     "lint": "eslint packages/",
-    "prepare": "husky"
+    "prepare": "husky",
+    "livekit": "node scripts/livekit-dev.mjs",
+    "db:up": "docker compose -f infra/mysql/docker-compose.local.yml up -d",
+    "db:down": "docker compose -f infra/mysql/docker-compose.local.yml down",
+    "seed": "node infra/mysql/seed-dev.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -37,3 +37,6 @@ Thumbs.db
 # Dev server
 .next/
 out/
+
+# Locally downloaded LiveKit dev server
+.livekit/

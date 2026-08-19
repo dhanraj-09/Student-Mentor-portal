@@ -1,0 +1,426 @@
+/* Encrypted video call. All rules scoped under .mc-container, matching the
+   pattern used by the meetings pages. The layout sits inside the role layout's
+   main-content, so it is a plain flow block. */
+
+.mc-container {
+  /* The call owns the page: the grid takes whatever height is left once the
+     header and the control bar are placed. */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* The faculty layout's main-content has no padding and hides overflow, so the
+   page supplies both - the same arrangement .fm-container uses. */
+.faculty-dashboard-container .mc-container {
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 26px 60px 32px;
+  background-color: #f4f6f8;
+}
+
+/* The student layout's main-content already pads and scrolls. */
+.dashboard-container .mc-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  min-height: calc(100vh - 150px);
+}
+
+.mc-container .mc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.mc-container .mc-header h1 {
+  font-size: 1.9rem;
+  font-weight: 800;
+  margin: 0 0 6px;
+  color: #1a1a1a;
+}
+.mc-container .mc-header p {
+  color: #666;
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* ---------------------------------------------------------------- security */
+
+.mc-container .mc-secure {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  max-width: 420px;
+  font-size: 0.85rem;
+}
+.mc-container .mc-secure.on {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+.mc-container .mc-secure.off {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #b45309;
+}
+.mc-container .mc-secure strong {
+  display: block;
+  font-size: 0.9rem;
+}
+.mc-container .mc-secure span {
+  opacity: 0.9;
+}
+
+.mc-container .mc-notice {
+  background: #fff7ed;
+  color: #b45309;
+  border: 1px solid #fed7aa;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.92rem;
+}
+.mc-container .mc-error {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.92rem;
+}
+.mc-container .mc-inline-btn {
+  margin-left: 10px;
+  background: transparent;
+  border: 1px solid currentColor;
+  color: inherit;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* ------------------------------------------------------------------- lobby */
+
+.mc-container .mc-lobby {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 30px;
+}
+.mc-container .mc-lobby-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 26px;
+  width: min(560px, 100%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.mc-container .mc-lobby-card h2 {
+  margin: 0 0 6px;
+  font-size: 1.3rem;
+  color: #1a1a1a;
+}
+.mc-container .mc-lobby-card p {
+  color: #666;
+  margin: 0 0 18px;
+  font-size: 0.95rem;
+}
+.mc-container .mc-lobby-toggles {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.mc-container .mc-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e5e5e5;
+  background: #fafafa;
+  color: #555;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.mc-container .mc-toggle.on {
+  border-color: #ffd7a8;
+  background: #fff7ed;
+  color: #b45309;
+}
+.mc-container .mc-fingerprint {
+  font-size: 0.8rem;
+  color: #777;
+  margin: 0 0 18px;
+}
+.mc-container .mc-fingerprint code {
+  font-size: 0.78rem;
+  word-break: break-all;
+}
+.mc-container .mc-lobby-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.mc-container .mc-join-btn {
+  background: #ff8c00;
+  color: #fff;
+  border: none;
+  padding: 11px 22px;
+  border-radius: 8px;
+  font-weight: 700;
+  transition: background 0.2s;
+}
+.mc-container .mc-join-btn:hover:not(:disabled) {
+  background: #e67e22;
+}
+.mc-container .mc-join-btn:disabled {
+  background: #e5c8a8;
+  cursor: not-allowed;
+}
+.mc-container .mc-cancel-btn {
+  background: transparent;
+  border: 1px solid #e5e5e5;
+  color: #555;
+  padding: 11px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------ status */
+
+.mc-container .mc-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+.mc-container .mc-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #9ca3af;
+}
+.mc-container .mc-dot.connected {
+  background: #16a34a;
+}
+.mc-container .mc-dot.connecting,
+.mc-container .mc-dot.idle {
+  background: #ff8c00;
+}
+.mc-container .mc-dot.reconnecting,
+.mc-container .mc-dot.disconnected {
+  background: #f59e0b;
+}
+.mc-container .mc-dot.failed {
+  background: #dc2626;
+}
+.mc-container .mc-sep {
+  color: #ccc;
+}
+
+/* ------------------------------------------------------------------- grid */
+
+.mc-container .mc-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+  /* Fill the free height but keep the tiles centred, so video keeps its own
+     proportions instead of being stretched into a portrait box. */
+  flex: 1;
+  align-content: center;
+  margin-bottom: 16px;
+}
+@media (min-width: 700px) {
+  .mc-container .mc-grid.count-2,
+  .mc-container .mc-grid.count-3,
+  .mc-container .mc-grid.count-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.mc-container .mc-tile {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 16 / 9;
+  max-height: 62vh;
+  background: #111827;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 10px rgba(17, 24, 39, 0.12);
+}
+.mc-container .mc-tile.speaking {
+  border-color: #ff8c00;
+}
+.mc-container .mc-tile.empty {
+  background: #fff;
+  border: 2px dashed #e5e5e5;
+  box-shadow: none;
+  color: #999;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 20px;
+}
+.mc-container .mc-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mc-container .mc-video.mirrored {
+  transform: scaleX(-1);
+}
+.mc-container .mc-placeholder {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  color: #d1d5db;
+  font-size: 0.85rem;
+}
+.mc-container .mc-avatar {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: #1f2937;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.mc-container .mc-caption {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
+  color: #fff;
+  font-size: 0.85rem;
+}
+.mc-container .mc-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mc-container .mc-you {
+  font-weight: 400;
+  opacity: 0.8;
+}
+.mc-container .mc-badges {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.mc-container .mc-badge {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.18);
+}
+.mc-container .mc-badge.off {
+  background: #dc2626;
+}
+.mc-container .mc-badge.secure {
+  background: #16a34a;
+}
+.mc-container .mc-badge.insecure {
+  background: #f59e0b;
+}
+
+/* ---------------------------------------------------------------- controls */
+
+.mc-container .mc-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(17, 24, 39, 0.06);
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+}
+.mc-container .mc-control {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 84px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e5e5;
+  background: #fafafa;
+  color: #444;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.mc-container .mc-control:hover:not(:disabled) {
+  border-color: #ffd7a8;
+  background: #fff7ed;
+  color: #b45309;
+}
+.mc-container .mc-control:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.mc-container .mc-control.off {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+.mc-container .mc-control.active {
+  background: #fff7ed;
+  border-color: #ffd7a8;
+  color: #b45309;
+}
+.mc-container .mc-control.leave {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #fff;
+}
+.mc-container .mc-control.leave:hover:not(:disabled) {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  color: #fff;
+}
+
+@media (max-width: 520px) {
+  .mc-container .mc-control {
+    min-width: 72px;
+    padding: 9px 10px;
+  }
+  .mc-container .mc-header h1 {
+    font-size: 1.5rem;
+  }
+}
+
+/* On a short window the grid stops stretching so the controls stay visible. */
+@media (max-height: 700px) {
+  .mc-container {
+    min-height: auto;
+  }
+  .mc-container .mc-tile {
+    min-height: 200px;
+  }
+}

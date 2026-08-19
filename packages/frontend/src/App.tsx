@@ -3,6 +3,7 @@ import FacultyLayout from './layouts/FacultyLayout';
 import StudentLayout from './layouts/StudentLayout';
 import FacultyDashboard from './pages/faculty/DashboardFaculty';
 import FacultyLogin from './pages/faculty/FacultyLogin';
+import FacultyMeetingCall from './pages/faculty/FacultyMeetingCall';
 import FacultyMeetings from './pages/faculty/FacultyMeetings';
 import StudentsFaculty from './pages/faculty/studentFaculty';
 import TeacherProfile from './pages/faculty/TeacherProfile';
@@ -13,6 +14,7 @@ import Login from './pages/student/Login';
 import NewQueryForm from './pages/student/NewQueryForm';
 import RaiseQuery from './pages/student/RaiseQuery';
 import SignUp from './pages/student/SignUp';
+import StudentMeetingCall from './pages/student/StudentMeetingCall';
 import StudentMeetings from './pages/student/StudentMeetings';
 
 function App() {
@@ -29,6 +31,10 @@ function App() {
           <Route path="/Raise-Query" element={<RaiseQuery />} />
           <Route path="/edit-profile" element={<EditProfile />} />
           <Route path="/student-meetings" element={<StudentMeetings />} />
+          <Route
+            path="/student-meetings/:meetingId/call"
+            element={<StudentMeetingCall />}
+          />
         </Route>
 
         <Route element={<FacultyLayout />}>
@@ -36,6 +42,10 @@ function App() {
           <Route path="/faculty-students" element={<StudentsFaculty />} />
           <Route path="/unassigned-students" element={<UnassignedStudents />} />
           <Route path="/faculty-meetings" element={<FacultyMeetings />} />
+          <Route
+            path="/faculty-meetings/:meetingId/call"
+            element={<FacultyMeetingCall />}
+          />
         </Route>
 
         <Route path="/faculty-profile" element={<TeacherProfile />} />

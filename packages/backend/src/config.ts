@@ -56,6 +56,9 @@ export const config = {
     password: requireEnv('DB_PASSWORD'),
     database: requireEnv('DB_NAME'),
     connectionLimit: numberEnv('DB_CONNECTION_LIMIT', 10),
+    /** Aiven requires SSL, so it stays on by default. Set DB_SSL=false only for
+     *  a local database container that does not terminate TLS. */
+    ssl: booleanEnv('DB_SSL', true),
     /** Aiven requires SSL. Locally the CA lives at the backend package root
      *  (git-ignored) and is read from disk; in a deploy where no file exists
      *  (e.g. Railway) paste the cert contents into DB_SSL_CA_PEM instead. */
@@ -82,6 +85,22 @@ export const config = {
       .split(',')
       .map((origin) => origin.trim())
       .filter((origin) => origin.length > 0),
+  },
+
+  /**
+   * LiveKit powers the WebRTC media for meeting video calls. The API secret is
+   * used only to sign short-lived join tokens and must never reach the browser.
+   * In production LIVEKIT_URL has to be wss://.
+   */
+  livekit: {
+    url: optionalEnv('LIVEKIT_URL', ''),
+    apiKey: optionalEnv('LIVEKIT_API_KEY', ''),
+    apiSecret: optionalEnv('LIVEKIT_API_SECRET', ''),
+    tokenTtlSeconds: numberEnv('LIVEKIT_TOKEN_TTL_SECONDS', 300),
+    configured:
+      optionalEnv('LIVEKIT_URL', '') !== '' &&
+      optionalEnv('LIVEKIT_API_KEY', '') !== '' &&
+      optionalEnv('LIVEKIT_API_SECRET', '') !== '',
   },
 
   rateLimit: {

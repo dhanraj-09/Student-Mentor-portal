@@ -13,8 +13,12 @@ import type {
   UserType,
 } from 'shared';
 import type {
+  DeviceKeyView,
+  EnvelopePayload,
   FacultyMeeting,
   MeetingDetail,
+  MeetingKeyState,
+  RoomAccess,
   StudentMeeting,
 } from '../types/meetings';
 
@@ -411,5 +415,69 @@ export function getStudentMeetings(
 ): Promise<AxiosResponse<StudentMeeting[]>> {
   return apiClient.get<StudentMeeting[]>(
     `/api/student/${registration_no}/meetings`
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Video call                                                                  */
+/*                                                                             */
+/* These endpoints move *sealed* key material around. The room key itself is   */
+/* never part of any payload: it is sealed in the browser and can only be      */
+/* opened by the recipient's device.                                           */
+/* -------------------------------------------------------------------------- */
+
+export function registerDeviceKey(
+  public_key: string
+): Promise<AxiosResponse<DeviceKeyView>> {
+  return apiClient.post<DeviceKeyView>('/api/meetings/e2ee/device-key', {
+    public_key,
+  });
+}
+
+export function getMyDeviceKey(): Promise<AxiosResponse<DeviceKeyView | null>> {
+  return apiClient.get<DeviceKeyView | null>('/api/meetings/e2ee/device-key');
+}
+
+export function getParticipantKeys(
+  meetingId: number
+): Promise<AxiosResponse<DeviceKeyView[]>> {
+  return apiClient.get<DeviceKeyView[]>(
+    `/api/meetings/${meetingId}/room/participant-keys`
+  );
+}
+
+export function getMeetingKeyState(
+  meetingId: number
+): Promise<AxiosResponse<MeetingKeyState>> {
+  return apiClient.get<MeetingKeyState>(`/api/meetings/${meetingId}/room/keys`);
+}
+
+export function publishMeetingKeys(
+  meetingId: number,
+  key_version: number,
+  envelopes: EnvelopePayload[]
+): Promise<AxiosResponse<{ key_version: number }>> {
+  return apiClient.post<{ key_version: number }>(
+    `/api/meetings/${meetingId}/room/keys`,
+    { key_version, envelopes }
+  );
+}
+
+export function requestMeetingKey(
+  meetingId: number
+): Promise<AxiosResponse<MessageResponse>> {
+  return apiClient.post<MessageResponse>(
+    `/api/meetings/${meetingId}/room/key-requests`,
+    {}
+  );
+}
+
+/** Short-lived LiveKit token. Refused unless the caller holds a key envelope. */
+export function getRoomAccess(
+  meetingId: number
+): Promise<AxiosResponse<RoomAccess>> {
+  return apiClient.post<RoomAccess>(
+    `/api/meetings/${meetingId}/room/token`,
+    {}
   );
 }
