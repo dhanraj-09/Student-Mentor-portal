@@ -1,4 +1,5 @@
 import {
+  BookOpen,
   Calendar,
   FileText,
   Home,
@@ -45,6 +46,12 @@ const SidebarStudent = () => {
         </div>
         <div className="nav-item">
           <MessageSquare size={20} /> <span>Chat</span>
+        </div>
+        <div
+          className={navClass('/student-resources')}
+          onClick={() => navigate('/student-resources')}
+        >
+          <BookOpen size={20} /> <span>Resources</span>
         </div>
         <div className="nav-item">
           <Users size={20} /> <span>Community</span>

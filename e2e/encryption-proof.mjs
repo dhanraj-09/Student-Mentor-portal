@@ -27,13 +27,18 @@ const FACULTY = {
 const results = [];
 function check(name, ok, detail = '') {
   results.push({ name, ok });
-  console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? ` :: ${detail}` : ''}`);
+  console.log(
+    `${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? ` :: ${detail}` : ''}`
+  );
 }
 
 /* ------------------------------------------------------------------ helpers */
 
 const LIVEKIT_CLIENT_BUNDLE = fileURLToPath(
-  new URL('../node_modules/livekit-client/dist/livekit-client.esm.mjs', import.meta.url)
+  new URL(
+    '../node_modules/livekit-client/dist/livekit-client.esm.mjs',
+    import.meta.url
+  )
 );
 
 const OPERATOR_PAGE = `<!doctype html>
@@ -99,13 +104,18 @@ async function api(path, options = {}) {
     headers: { 'content-type': 'application/json', ...(options.headers ?? {}) },
   });
   const body = await response.json();
-  if (!response.ok) throw new Error(`${path} -> ${response.status} ${JSON.stringify(body)}`);
+  if (!response.ok)
+    throw new Error(`${path} -> ${response.status} ${JSON.stringify(body)}`);
   return body;
 }
 
 async function launch(seed) {
-  const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
-  const context = await browser.newContext({ permissions: ['camera', 'microphone'] });
+  const browser = await chromium.launch({
+    args: ['--autoplay-policy=no-user-gesture-required'],
+  });
+  const context = await browser.newContext({
+    permissions: ['camera', 'microphone'],
+  });
   await context.addInitScript(fakeMediaScript(seed));
   const page = await context.newPage();
   return { browser, context, page };
@@ -202,7 +212,11 @@ const state = await operator.page.evaluate(
   ([url, token]) => window.joinAsOperator(url, token),
   [LIVEKIT, operatorToken]
 );
-check('operator with the LiveKit API secret can join the room', state === 'connected', state);
+check(
+  'operator with the LiveKit API secret can join the room',
+  state === 'connected',
+  state
+);
 
 await operator.page.waitForTimeout(12000);
 const stats = await operator.page.evaluate(() => window.readStats());
@@ -248,5 +262,7 @@ await faculty.browser.close();
 staticServer.close();
 
 const failed = results.filter((result) => !result.ok);
-console.log(`\n${results.length - failed.length}/${results.length} checks passed`);
+console.log(
+  `\n${results.length - failed.length}/${results.length} checks passed`
+);
 if (failed.length > 0) process.exitCode = 1;

@@ -8,3 +8,13 @@ export {
   updateQueryResponse,
 } from './Query.js';
 export type { QueryRow, NewQuery } from './Query.js';
+
+export {
+  findResourcesByFaculty,
+  findResourcesForStudent,
+  findResourceOwnedByFaculty,
+  insertResource,
+  updateResource,
+  deleteResource,
+} from './Resource.js';
+export type { ResourceRow, NewResource, ResourceUpdate } from './Resource.js';

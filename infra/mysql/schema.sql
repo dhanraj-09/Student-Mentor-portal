@@ -100,6 +100,25 @@ INSERT IGNORE INTO meeting_skill_options (skill_name) VALUES
   ('Presentation');
 
 -- ---------------------------------------------------------------------------
+-- Mentor-shared learning resources (see migrations/002_resources.sql for the
+-- equivalent migration to run against an existing database).
+-- ---------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS resources (
+  resource_id   INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  faculty_email VARCHAR(191) NOT NULL,
+  title         VARCHAR(255) NOT NULL,
+  description   TEXT NULL,
+  url           VARCHAR(1024) NULL,
+  category      VARCHAR(191) NULL,
+  created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_resources_faculty FOREIGN KEY (faculty_email)
+    REFERENCES faculty(email) ON DELETE CASCADE ON UPDATE CASCADE,
+  INDEX idx_resources_faculty (faculty_email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------------------------
 -- End-to-end encryption key distribution (see migrations/001_video_meetings.sql
 -- for the equivalent migration to run against an existing database).
 -- ---------------------------------------------------------------------------

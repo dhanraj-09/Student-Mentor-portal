@@ -21,12 +21,30 @@ const installDir = join(root, '.livekit');
 const VERSION = process.env.LIVEKIT_VERSION ?? '1.13.5';
 
 const PLATFORMS = {
-  'win32-x64': { asset: `livekit_${VERSION}_windows_amd64.zip`, binary: 'livekit-server.exe' },
-  'win32-arm64': { asset: `livekit_${VERSION}_windows_arm64.zip`, binary: 'livekit-server.exe' },
-  'darwin-x64': { asset: `livekit_${VERSION}_darwin_amd64.zip`, binary: 'livekit-server' },
-  'darwin-arm64': { asset: `livekit_${VERSION}_darwin_arm64.zip`, binary: 'livekit-server' },
-  'linux-x64': { asset: `livekit_${VERSION}_linux_amd64.tar.gz`, binary: 'livekit-server' },
-  'linux-arm64': { asset: `livekit_${VERSION}_linux_arm64.tar.gz`, binary: 'livekit-server' },
+  'win32-x64': {
+    asset: `livekit_${VERSION}_windows_amd64.zip`,
+    binary: 'livekit-server.exe',
+  },
+  'win32-arm64': {
+    asset: `livekit_${VERSION}_windows_arm64.zip`,
+    binary: 'livekit-server.exe',
+  },
+  'darwin-x64': {
+    asset: `livekit_${VERSION}_darwin_amd64.zip`,
+    binary: 'livekit-server',
+  },
+  'darwin-arm64': {
+    asset: `livekit_${VERSION}_darwin_arm64.zip`,
+    binary: 'livekit-server',
+  },
+  'linux-x64': {
+    asset: `livekit_${VERSION}_linux_amd64.tar.gz`,
+    binary: 'livekit-server',
+  },
+  'linux-arm64': {
+    asset: `livekit_${VERSION}_linux_arm64.tar.gz`,
+    binary: 'livekit-server',
+  },
 };
 
 const key = `${process.platform}-${process.arch}`;
@@ -69,7 +87,10 @@ function extractArchive(archivePath) {
     : [['tar', ['-xzf', platform.asset]]];
 
   for (const [command, args] of attempts) {
-    const result = spawnSync(command, args, { cwd: installDir, stdio: 'inherit' });
+    const result = spawnSync(command, args, {
+      cwd: installDir,
+      stdio: 'inherit',
+    });
     if (result.status === 0 && existsSync(binaryPath)) return;
   }
 
@@ -107,7 +128,9 @@ async function main() {
   console.log('Starting LiveKit in dev mode');
   console.log('  url    : ws://localhost:7880');
   console.log('  api key: devkey');
-  console.log('  secret : secret   (localhost only - never use these in production)\n');
+  console.log(
+    '  secret : secret   (localhost only - never use these in production)\n'
+  );
 
   const server = spawn(binaryPath, ['--dev', ...process.argv.slice(2)], {
     stdio: 'inherit',

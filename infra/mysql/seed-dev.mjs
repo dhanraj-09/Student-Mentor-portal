@@ -142,9 +142,7 @@ async function main() {
 
   console.log('\nSign in with:');
   console.log(`  faculty : ${FACULTY.email} / ${FACULTY.password}`);
-  console.log(
-    `  student : ${STUDENT.registration_no} / ${STUDENT.password}`
-  );
+  console.log(`  student : ${STUDENT.registration_no} / ${STUDENT.password}`);
 }
 
 main().catch((error) => {

@@ -24,7 +24,9 @@ const FACULTY = {
 const results = [];
 function check(name, ok, detail = '') {
   results.push({ name, ok });
-  console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? ` :: ${detail}` : ''}`);
+  console.log(
+    `${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? ` :: ${detail}` : ''}`
+  );
 }
 
 async function launch(seed) {
@@ -36,7 +38,9 @@ async function launch(seed) {
   });
   await context.addInitScript(fakeMediaScript(seed));
   const page = await context.newPage();
-  page.on('pageerror', (error) => console.log(`  [pageerror] ${error.message}`));
+  page.on('pageerror', (error) =>
+    console.log(`  [pageerror] ${error.message}`)
+  );
   return { browser, context, page };
 }
 
@@ -51,7 +55,10 @@ async function createOngoingMeeting() {
   const call = async (path, options = {}) => {
     const response = await fetch(`${API}${path}`, {
       ...options,
-      headers: { 'content-type': 'application/json', ...(options.headers ?? {}) },
+      headers: {
+        'content-type': 'application/json',
+        ...(options.headers ?? {}),
+      },
     });
     const body = await response.json();
     if (!response.ok) {
@@ -100,7 +107,10 @@ async function joinCall(page, path) {
     .getByRole('button', { name: /join securely/i })
     .waitFor({ timeout: 45000 });
   await page.getByRole('button', { name: /join securely/i }).click();
-  await page.getByText('Connected', { exact: false }).first().waitFor({ timeout: 45000 });
+  await page
+    .getByText('Connected', { exact: false })
+    .first()
+    .waitFor({ timeout: 45000 });
 }
 
 /** Playback advancing on a remote tile proves encrypted frames arrive and decode. */
@@ -109,7 +119,9 @@ async function remoteVideoAdvances(page) {
     const deadline = Date.now() + 30000;
     let last = null;
     while (Date.now() < deadline) {
-      const remote = document.querySelector('.mc-tile video[data-local="false"]');
+      const remote = document.querySelector(
+        '.mc-tile video[data-local="false"]'
+      );
       if (remote && remote.videoWidth > 0 && remote.currentTime > 0) {
         if (last !== null && remote.currentTime > last + 0.4) {
           return {
@@ -137,9 +149,7 @@ try {
   await student.page.goto(`${APP}/`);
   await student.page.locator('#regNo').fill(STUDENT.registration_no);
   await student.page.locator('#password').fill(STUDENT.password);
-  await student.page
-    .getByRole('button', { name: /access dashboard/i })
-    .click();
+  await student.page.getByRole('button', { name: /access dashboard/i }).click();
   await student.page.waitForURL('**/dashboard', { timeout: 20000 });
   check('student signs in', true);
 
@@ -177,7 +187,10 @@ try {
   check('mentor connects to the same call', true);
 
   /* --------------------------------------------------------- media flows */
-  const secureBadge = await student.page.locator('.mc-secure').first().innerText();
+  const secureBadge = await student.page
+    .locator('.mc-secure')
+    .first()
+    .innerText();
   check(
     'the call reports end-to-end encryption',
     /end-to-end encrypted/i.test(secureBadge),
@@ -234,7 +247,10 @@ try {
     await rotate.click();
     await faculty.page.waitForTimeout(5000);
     const stillDecoding = await remoteVideoAdvances(faculty.page);
-    check('media survives a key rotation by the mentor', stillDecoding !== null);
+    check(
+      'media survives a key rotation by the mentor',
+      stillDecoding !== null
+    );
   }
 
   /* ------------------------------------------------------------- leaving */
@@ -258,5 +274,7 @@ try {
 }
 
 const failed = results.filter((result) => !result.ok);
-console.log(`\n${results.length - failed.length}/${results.length} checks passed`);
+console.log(
+  `\n${results.length - failed.length}/${results.length} checks passed`
+);
 if (failed.length > 0) process.exitCode = 1;

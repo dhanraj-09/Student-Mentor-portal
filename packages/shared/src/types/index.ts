@@ -143,3 +143,86 @@ export interface CompleteMeetingRequest {
   marks: number;
   skills: number[];
 }
+
+/* -------------------------------------------------------------------------- */
+/* Dashboards                                                                  */
+/*                                                                             */
+/* Aggregates assembled server-side so a dashboard screen costs one request    */
+/* instead of fanning out across the profile, query and meeting endpoints.     */
+/* -------------------------------------------------------------------------- */
+
+export interface QueryStats {
+  total: number;
+  pending: number;
+  resolved: number;
+}
+
+export interface MeetingStats {
+  total: number;
+  pending: number;
+  accepted: number;
+  ongoing: number;
+  completed: number;
+}
+
+export type StudentSummary = Pick<
+  Student,
+  'registration_no' | 'name' | 'degree' | 'branch' | 'year'
+>;
+
+export type FacultySummary = Pick<
+  Faculty,
+  'name' | 'email' | 'designation' | 'department'
+>;
+
+export interface StudentDashboard {
+  student: StudentSummary;
+  mentor: FacultySummary | null;
+  queries: QueryStats;
+  meetings: MeetingStats;
+  recentQueries: Query[];
+  /** Accepted or ongoing, soonest first. */
+  upcomingMeetings: Meeting[];
+}
+
+export interface FacultyDashboard {
+  faculty: FacultySummary;
+  students: {
+    assigned: number;
+    unassigned: number;
+  };
+  queries: QueryStats;
+  meetings: MeetingStats;
+  /**
+   * Mean marks this mentor has awarded across completed meetings, or null
+   * before the first one. Faculty-side only: the student meeting list omits
+   * `marks` by design, so it is deliberately absent from StudentDashboard.
+   */
+  averageMarks: number | null;
+  /** Awaiting a response from this mentor. */
+  pendingQueries: Query[];
+  /** Meeting requests to accept, plus calls already running. */
+  actionableMeetings: Meeting[];
+}
+
+/* -------------------------------------------------------------------------- */
+/* Resources                                                                   */
+/* -------------------------------------------------------------------------- */
+
+export interface Resource {
+  resource_id: number;
+  faculty_email: string;
+  title: string;
+  description: string | null;
+  url: string | null;
+  category: string | null;
+  created_at: DateLike;
+  updated_at: DateLike;
+}
+
+export interface ResourceInput {
+  title: string;
+  description?: string | null;
+  url?: string | null;
+  category?: string | null;
+}

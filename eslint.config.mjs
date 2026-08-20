@@ -9,20 +9,31 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     rules: {
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_' },
+      ],
       'no-console': 'warn',
     },
   },
   {
     files: ['packages/backend/**/*.ts'],
     languageOptions: {
-      globals: { process: 'readonly', console: 'readonly', __dirname: 'readonly' },
+      globals: {
+        process: 'readonly',
+        console: 'readonly',
+        __dirname: 'readonly',
+      },
     },
   },
   {
     files: ['packages/frontend/**/*.{ts,tsx}'],
     languageOptions: {
-      globals: { window: 'readonly', document: 'readonly', localStorage: 'readonly' },
+      globals: {
+        window: 'readonly',
+        document: 'readonly',
+        localStorage: 'readonly',
+      },
     },
   }
 );

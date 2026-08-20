@@ -45,3 +45,23 @@ export function isUserType(value: unknown): value is UserType {
 export function isNonEmptyString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0;
 }
+
+/**
+ * Accepts only http(s) links.
+ *
+ * The frontend renders a resource url as an anchor, so anything else — most
+ * of all `javascript:` — would turn a mentor-supplied string into script
+ * execution in a student's browser.
+ */
+export function isSafeHttpUrl(value: unknown): value is string {
+  if (typeof value !== 'string' || value.trim().length === 0) return false;
+  try {
+    const parsed = new URL(value.trim());
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+export const RESOURCE_TITLE_MAX_LENGTH = 255;
+export const RESOURCE_URL_MAX_LENGTH = 1024;

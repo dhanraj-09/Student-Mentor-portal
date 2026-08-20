@@ -2,13 +2,17 @@ import axios from 'axios';
 import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import type {
   Faculty,
+  FacultyDashboard,
   FacultyLoginResponse,
   MeetingSkillOption,
   MessageResponse,
   Query,
   QueryStatus,
   RefreshTokenResponse,
+  Resource,
+  ResourceInput,
   Student,
+  StudentDashboard,
   StudentLoginResponse,
   UserType,
 } from 'shared';
@@ -480,4 +484,64 @@ export function getRoomAccess(
     `/api/meetings/${meetingId}/room/token`,
     {}
   );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Dashboards                                                                  */
+/*                                                                             */
+/* One request per dashboard: the aggregate is assembled server-side, so these  */
+/* replace the profile + queries + meetings fan-out the screens used to do.     */
+/* -------------------------------------------------------------------------- */
+
+export function getStudentDashboard(): Promise<
+  AxiosResponse<StudentDashboard>
+> {
+  return apiClient.get<StudentDashboard>('/api/dashboard/student');
+}
+
+export function getFacultyDashboard(): Promise<
+  AxiosResponse<FacultyDashboard>
+> {
+  return apiClient.get<FacultyDashboard>('/api/dashboard/faculty');
+}
+
+/* -------------------------------------------------------------------------- */
+/* Resources                                                                   */
+/* -------------------------------------------------------------------------- */
+
+export function getFacultyResources(
+  email: string
+): Promise<AxiosResponse<Resource[]>> {
+  return apiClient.get<Resource[]>(`/api/faculty/${email}/resources`);
+}
+
+export function getStudentResources(
+  registration_no: string
+): Promise<AxiosResponse<Resource[]>> {
+  return apiClient.get<Resource[]>(`/api/student/${registration_no}/resources`);
+}
+
+export function createResource(
+  payload: ResourceInput
+): Promise<AxiosResponse<{ message: string; resourceId: number }>> {
+  return apiClient.post<{ message: string; resourceId: number }>(
+    '/api/resources',
+    payload
+  );
+}
+
+export function updateResource(
+  resourceId: number,
+  payload: ResourceInput
+): Promise<AxiosResponse<MessageResponse>> {
+  return apiClient.put<MessageResponse>(
+    `/api/resources/${resourceId}`,
+    payload
+  );
+}
+
+export function deleteResource(
+  resourceId: number
+): Promise<AxiosResponse<MessageResponse>> {
+  return apiClient.delete<MessageResponse>(`/api/resources/${resourceId}`);
 }

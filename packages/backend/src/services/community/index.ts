@@ -12,3 +12,11 @@ export {
   respondToQuery,
 } from './queriesService.js';
 export type { QueryErrorCode } from './queriesService.js';
+export {
+  listFacultyResources,
+  listStudentResources,
+  createResource,
+  updateResource,
+  deleteResource,
+} from './resourcesService.js';
+export type { ResourceErrorCode } from './resourcesService.js';

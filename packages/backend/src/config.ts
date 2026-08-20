@@ -42,6 +42,23 @@ function booleanEnv(name: string, fallback: boolean): boolean {
   return value.toLowerCase() === 'true';
 }
 
+export const LOG_LEVELS = ['error', 'warn', 'info', 'debug'] as const;
+
+export type LogLevel = (typeof LOG_LEVELS)[number];
+
+function logLevelEnv(name: string, fallback: LogLevel): LogLevel {
+  const value = process.env[name];
+  if (value === undefined || value === '') return fallback;
+  const normalised = value.toLowerCase();
+  const match = LOG_LEVELS.find((level) => level === normalised);
+  if (match === undefined) {
+    throw new Error(
+      `Environment variable ${name} must be one of ${LOG_LEVELS.join(', ')}, got "${value}"`
+    );
+  }
+  return match;
+}
+
 const nodeEnv = optionalEnv('NODE_ENV', 'development');
 
 export const config = {
@@ -101,6 +118,15 @@ export const config = {
       optionalEnv('LIVEKIT_URL', '') !== '' &&
       optionalEnv('LIVEKIT_API_KEY', '') !== '' &&
       optionalEnv('LIVEKIT_API_SECRET', '') !== '',
+  },
+
+  logging: {
+    /** Verbosity floor. Defaults to every level locally, info upward in
+     *  production so request noise does not swamp the aggregator. */
+    level: logLevelEnv(
+      'LOG_LEVEL',
+      nodeEnv === 'production' ? 'info' : 'debug'
+    ),
   },
 
   rateLimit: {
