@@ -21,7 +21,7 @@ const SidebarFaculty = () => {
         </div>
         <div
           className="nav-item-faculty"
-          onClick={() => navigate('/faculty-meetings')}
+          onClick={() => navigate('/dashboard-faculty')}
         >
           <span>Queries</span>
         </div>
@@ -48,12 +48,6 @@ const SidebarFaculty = () => {
           onClick={() => navigate('/faculty-profile')}
         >
           <span>My Profile</span>
-        </div>
-        <div
-          className="nav-item-faculty"
-          onClick={() => navigate('/community')}
-        >
-          <span>chat</span>
         </div>
         <div
           className="nav-item-faculty"

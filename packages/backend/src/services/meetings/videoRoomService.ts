@@ -8,6 +8,7 @@ import {
   findMeetingRoom,
   findParticipantDeviceKeys,
   findParticipantNames,
+  resetKeyMaterial,
   saveEnvelopes,
   upsertDeviceKey,
   upsertKeyRequest,
@@ -407,6 +408,33 @@ export async function requestKey(
     deviceKey.fingerprint
   );
   return { success: true, data: { requested: true } };
+}
+
+/**
+ * Mentor-only escape hatch for a meeting whose key nobody can open.
+ *
+ * Every participant switching browsers (a new profile, cleared site data, a
+ * different machine) leaves the current envelopes sealed to device keys that
+ * no longer exist. Both sides then wait for the other to reseal, and neither
+ * can. Resetting drops that generation so the call can start over.
+ *
+ * Restricted to the mentor because it destroys key material: a student who
+ * merely cannot open the key should request one instead, which the holder
+ * reseals automatically.
+ */
+export async function resetRoomKeys(
+  user: AuthTokenPayload,
+  meetingId: string
+): Promise<Result<{ key_version: number }, VideoRoomErrorCode>> {
+  const loaded = await loadMeetingForParticipant(user, meetingId);
+  if (!loaded.success) return loaded;
+
+  if (user.type !== 'faculty') {
+    return { success: false, code: 'FACULTY_ONLY' };
+  }
+
+  await resetKeyMaterial(meetingId);
+  return { success: true, data: { key_version: 0 } };
 }
 
 /* -------------------------------------------------------------------------- */

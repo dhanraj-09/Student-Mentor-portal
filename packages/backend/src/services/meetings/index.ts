@@ -25,6 +25,7 @@ export {
   getKeyState,
   publishEnvelopes,
   requestKey,
+  resetRoomKeys,
   issueRoomToken,
   fingerprintOf,
 } from './videoRoomService.js';

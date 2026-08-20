@@ -44,8 +44,9 @@ const SidebarStudent = () => {
         >
           <Calendar size={20} /> <span>Meetings</span>
         </div>
-        <div className="nav-item">
+        <div className="nav-item nav-item-soon" title="Not built yet">
           <MessageSquare size={20} /> <span>Chat</span>
+          <span className="nav-soon-tag">Soon</span>
         </div>
         <div
           className={navClass('/student-resources')}
@@ -53,8 +54,9 @@ const SidebarStudent = () => {
         >
           <BookOpen size={20} /> <span>Resources</span>
         </div>
-        <div className="nav-item">
+        <div className="nav-item nav-item-soon" title="Not built yet">
           <Users size={20} /> <span>Community</span>
+          <span className="nav-soon-tag">Soon</span>
         </div>
         <div className="nav-item">
           <button className="btn-logout" onClick={() => void handleLogout()}>

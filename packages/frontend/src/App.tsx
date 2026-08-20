@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import FacultyLayout from './layouts/FacultyLayout';
 import StudentLayout from './layouts/StudentLayout';
+import NotFound from './pages/NotFound';
 import FacultyDashboard from './pages/faculty/DashboardFaculty';
 import FacultyLogin from './pages/faculty/FacultyLogin';
 import FacultyMeetingCall from './pages/faculty/FacultyMeetingCall';
@@ -52,6 +53,9 @@ function App() {
           <Route path="/faculty-resources" element={<FacultyResources />} />
           <Route path="/faculty-profile" element={<TeacherProfile />} />
         </Route>
+
+        {/* Anything unmatched, rather than a blank page. */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );

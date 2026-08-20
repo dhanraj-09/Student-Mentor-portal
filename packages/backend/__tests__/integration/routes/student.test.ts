@@ -20,12 +20,22 @@ import {
 const query = vi.fn();
 const queryOne = vi.fn();
 const mutate = vi.fn();
+/** Statements issued inside withTransaction, so transactional work is checked. */
+const txQueries: string[] = [];
 
 vi.mock('../../../src/models/shared/index.js', () => ({
   query: (...a: unknown[]) => query(...a),
   queryOne: (...a: unknown[]) => queryOne(...a),
   mutate: (...a: unknown[]) => mutate(...a),
-  withTransaction: vi.fn(),
+  // Run the callback for real against a recording connection, otherwise a
+  // transactional code path would silently do nothing under test.
+  withTransaction: (work: (c: unknown) => Promise<unknown>) =>
+    work({
+      query: (sql: string) => {
+        txQueries.push(String(sql).replace(/\s+/g, ' ').trim());
+        return Promise.resolve([{ affectedRows: 1 }]);
+      },
+    }),
   getPool: vi.fn(),
   isDuplicateEntryError: (error: unknown) =>
     (error as { code?: string }).code === 'ER_DUP_ENTRY',
@@ -57,10 +67,21 @@ let app: Express;
 
 beforeEach(() => {
   vi.clearAllMocks();
+  txQueries.length = 0;
   app = createApp();
 
   queryOne.mockImplementation((sql: string) => {
     const text = flat(sql);
+    if (text.includes('FROM meetings')) {
+      return Promise.resolve({
+        meeting_id: 5,
+        student_id: STUDENT_REGISTRATION_NO,
+        faculty_email: FACULTY_EMAIL,
+        status: 'ongoing',
+        room_name: null,
+        e2ee_key_version: 3,
+      });
+    }
     if (text.includes('FROM student')) return Promise.resolve(studentProfile());
     if (text.includes('FROM faculty')) return Promise.resolve(facultyProfile());
     return Promise.resolve(null);
@@ -341,5 +362,54 @@ describe('POST /api/resources', () => {
 
     expect(response.status).toBe(201);
     expect(mutate.mock.calls[0][1][0]).toBe(FACULTY_EMAIL);
+  });
+});
+
+describe('POST /api/meetings/:id/room/reset-keys', () => {
+  it('lets the mentor discard a key generation nobody can open', async () => {
+    const response = await request(app)
+      .post('/api/meetings/5/room/reset-keys')
+      .set('Authorization', `Bearer ${facultyToken}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.key_version).toBe(0);
+
+    // All three must happen together: a surviving envelope or request would be
+    // sealed to a key generation that no longer means anything.
+    expect(
+      txQueries.some((q) => /DELETE FROM e2ee_key_envelopes/.test(q))
+    ).toBe(true);
+    expect(txQueries.some((q) => /DELETE FROM e2ee_key_requests/.test(q))).toBe(
+      true
+    );
+    expect(
+      txQueries.some((q) => /UPDATE meetings SET e2ee_key_version = 0/.test(q))
+    ).toBe(true);
+  });
+
+  it('refuses a student: resetting destroys key material', async () => {
+    // A student who cannot open the key should request one instead, which the
+    // holder reseals automatically.
+    const response = await request(app)
+      .post('/api/meetings/5/room/reset-keys')
+      .set('Authorization', `Bearer ${studentToken}`);
+
+    expect(response.status).toBe(403);
+    // Nothing was destroyed on the way to the refusal.
+    expect(txQueries).toHaveLength(0);
+  });
+
+  it('refuses someone who is not in the meeting', async () => {
+    const response = await request(app)
+      .post('/api/meetings/5/room/reset-keys')
+      .set('Authorization', `Bearer ${otherStudentToken}`);
+
+    expect(response.status).toBe(403);
+  });
+
+  it('rejects an unauthenticated caller', async () => {
+    const response = await request(app).post('/api/meetings/5/room/reset-keys');
+
+    expect(response.status).toBe(401);
   });
 });

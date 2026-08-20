@@ -11,6 +11,7 @@ import {
   ShieldAlert,
 } from 'lucide-react';
 import { ConnectionQuality } from 'livekit-client';
+import { getApiErrorMessage, resetMeetingEncryption } from '../api/api';
 import { useMeetingCall, checkE2eeSupport } from '../hooks/useMeetingCall';
 import type { ParticipantView } from '../hooks/useMeetingCall';
 import { useRoomKey } from '../hooks/useRoomKey';
@@ -196,6 +197,25 @@ const MeetingCall = ({
 
   const secure = joined ? call.e2eeActive : key.phase === 'ready';
 
+  const [resetting, setResetting] = useState(false);
+  const [resetError, setResetError] = useState<string | null>(null);
+
+  const handleResetEncryption = async (): Promise<void> => {
+    setResetting(true);
+    setResetError(null);
+    try {
+      await resetMeetingEncryption(meetingId);
+      // Back to version 0: retrying mints a fresh key for both participants.
+      key.retry();
+    } catch (error) {
+      setResetError(
+        getApiErrorMessage(error, 'Could not reset the encryption key.')
+      );
+    } finally {
+      setResetting(false);
+    }
+  };
+
   return (
     <div className="mc-container">
       <div className="mc-header">
@@ -239,6 +259,25 @@ const MeetingCall = ({
           Waiting for the encryption key. Your browser has asked the other
           participant to share it; joining unlocks as soon as they open the
           call.
+          {/* If both participants have changed browser, nobody holds a key
+              that can be reshared and this wait never ends. Only the mentor
+              can break the deadlock, because it destroys key material. */}
+          {canRotateKey && (
+            <>
+              {' '}
+              Still waiting after both of you have opened the call?{' '}
+              <button
+                className="mc-inline-btn"
+                disabled={resetting}
+                onClick={() => void handleResetEncryption()}
+              >
+                {resetting ? 'Resetting…' : 'Reset encryption'}
+              </button>
+            </>
+          )}
+          {resetError !== null && (
+            <span className="mc-notice-error"> {resetError}</span>
+          )}
         </div>
       )}
 

@@ -18,6 +18,7 @@ import {
   publishEnvelopes,
   registerDeviceKey,
   requestKey,
+  resetRoomKeys,
   setReadiness,
 } from '../../services/meetings/index.js';
 import type { VideoRoomErrorCode } from '../../services/meetings/index.js';
@@ -220,6 +221,30 @@ router.post(
     }
 
     res.status(202).json({ message: 'Key requested' });
+  })
+);
+
+/**
+ * Mentor-only recovery for a meeting nobody can decrypt any more, which
+ * happens when every participant has moved to a different browser. Discards
+ * the current key generation so the next person to open the call mints a
+ * fresh one.
+ */
+router.post(
+  '/meetings/:meeting_id/room/reset-keys',
+  authenticated,
+  asyncHandler(async (req, res) => {
+    const result = await resetRoomKeys(req.user!, req.params.meeting_id);
+
+    if (!result.success) {
+      sendMeetingError(res, result.code, result.detail);
+      return;
+    }
+
+    res.status(200).json({
+      message: 'Encryption reset; rejoin the call to create a new key',
+      key_version: result.data.key_version,
+    });
   })
 );
 

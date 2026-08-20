@@ -1,5 +1,6 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { StudentDashboard } from 'shared';
 import {
   Bell,
   Building2,
@@ -13,12 +14,30 @@ import {
   Search,
 } from 'lucide-react';
 import { StudentContext } from '../../context/StudentContext';
-import { logout } from '../../api/api';
+import { getStudentDashboard, logout } from '../../api/api';
+import { formatDate } from '../../utils/format';
 import './styles/dashboard.css';
 
 const Dashboard = () => {
   const { Student, assignedFaculty } = useContext(StudentContext);
   const navigate = useNavigate();
+  // Server-side aggregate: one request instead of fanning out across the
+  // profile, query and meeting endpoints.
+  const [summary, setSummary] = useState<StudentDashboard | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getStudentDashboard()
+      .then(({ data }) => {
+        if (!cancelled) setSummary(data);
+      })
+      // The rest of the page renders from context, so a failed summary
+      // degrades the status tiles rather than blanking the dashboard.
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   if (Student === null) {
     return <div className="sd-loading">Loading dashboard…</div>;
@@ -90,10 +109,12 @@ const Dashboard = () => {
               <Building2 size={15} />
               {department}
             </li>
-            <li>
-              <MapPin size={15} />
-              Main Campus, Block B
-            </li>
+            {Student.year !== null && (
+              <li>
+                <MapPin size={15} />
+                Year {Student.year}
+              </li>
+            )}
           </ul>
         </div>
         <button
@@ -144,9 +165,12 @@ const Dashboard = () => {
                   <h4>{assignedFaculty.name}</h4>
                   <p>{assignedFaculty.department ?? 'Faculty'}</p>
                   <div className="sd-mentor-tags">
-                    <span className="sd-chip">
-                      <Calendar size={13} /> Available: Tue, Thu
-                    </span>
+                    {summary !== null && (
+                      <span className="sd-chip">
+                        <Calendar size={13} /> {summary.meetings.total}{' '}
+                        {summary.meetings.total === 1 ? 'meeting' : 'meetings'}
+                      </span>
+                    )}
                     {assignedFaculty.designation !== null && (
                       <span className="sd-chip sd-chip-accent">
                         {assignedFaculty.designation}
@@ -174,7 +198,13 @@ const Dashboard = () => {
             </span>
             <span className="sd-status-text">
               <span className="sd-status-key">CURRENT QUERY</span>
-              <span className="sd-status-val">1 Pending Action</span>
+              <span className="sd-status-val">
+                {summary === null
+                  ? '—'
+                  : summary.queries.pending === 0
+                    ? 'Nothing pending'
+                    : `${summary.queries.pending} pending`}
+              </span>
             </span>
             <ChevronRight size={16} className="sd-status-chevron" />
           </button>
@@ -188,19 +218,38 @@ const Dashboard = () => {
             </span>
             <span className="sd-status-text">
               <span className="sd-status-key">NEXT MEETING</span>
-              <span className="sd-status-val">April 25th, 2025</span>
+              <span className="sd-status-val">
+                {summary === null
+                  ? '—'
+                  : summary.upcomingMeetings.length === 0
+                    ? 'None scheduled'
+                    : formatDate(summary.upcomingMeetings[0].created_at)}
+              </span>
             </span>
             <ChevronRight size={16} className="sd-status-chevron" />
           </button>
 
+          {/* This tile used to display a fixed CGPA. Nothing in the schema
+              records one, so it now reports meeting progress, which is real. */}
           <article className="sd-card sd-cgpa">
-            <p className="sd-side-label">CURRENT CGPA</p>
+            <p className="sd-side-label">MEETINGS COMPLETED</p>
             <div className="sd-cgpa-value">
-              <strong>3.82</strong>
-              <span>/ 4.00</span>
+              <strong>{summary?.meetings.completed ?? 0}</strong>
+              <span>/ {summary?.meetings.total ?? 0}</span>
             </div>
             <div className="sd-cgpa-bar">
-              <span style={{ width: '95.5%' }} />
+              <span
+                style={{
+                  width:
+                    summary === null || summary.meetings.total === 0
+                      ? '0%'
+                      : `${Math.round(
+                          (summary.meetings.completed /
+                            summary.meetings.total) *
+                            100
+                        )}%`,
+                }}
+              />
             </div>
           </article>
         </div>

@@ -152,9 +152,24 @@ apiClient.interceptors.response.use(
 );
 
 export function getApiErrorMessage(error: unknown, fallback: string): string {
-  if (axios.isAxiosError<{ error?: string }>(error)) {
-    return error.response?.data?.error ?? fallback;
+  if (!axios.isAxiosError<{ error?: string } | string>(error)) {
+    return fallback;
   }
+
+  const data = error.response?.data;
+  // Middleware that answers before the app (rate limiting, proxies, gateways)
+  // can reply with a bare string rather than the usual `{ error }` envelope.
+  if (typeof data === 'string' && data.trim().length > 0) return data;
+  if (typeof data === 'object' && data !== null && data.error !== undefined) {
+    return data.error;
+  }
+
+  // 429 has nothing to do with the credentials typed in, so never let it fall
+  // through to a caller's "check your details" style fallback.
+  if (error.response?.status === 429) {
+    return 'Too many attempts. Please wait a few minutes and try again.';
+  }
+
   return fallback;
 }
 
@@ -488,6 +503,23 @@ export function requestMeetingKey(
 ): Promise<AxiosResponse<MessageResponse>> {
   return apiClient.post<MessageResponse>(
     `/api/meetings/${meetingId}/room/key-requests`,
+    {}
+  );
+}
+
+/**
+ * Mentor-only recovery for a meeting nobody can decrypt.
+ *
+ * If every participant has changed browser the sealed envelopes point at
+ * device keys that no longer exist, and both sides wait for the other
+ * forever. This discards that key generation so the next join mints a
+ * fresh one.
+ */
+export function resetMeetingEncryption(
+  meetingId: number
+): Promise<AxiosResponse<MessageResponse & { key_version: number }>> {
+  return apiClient.post<MessageResponse & { key_version: number }>(
+    `/api/meetings/${meetingId}/room/reset-keys`,
     {}
   );
 }

@@ -129,6 +129,18 @@ export const config = {
     ),
   },
 
+  /**
+   * Hops of reverse proxy in front of the app, passed to Express `trust proxy`.
+   *
+   * Rate limits are keyed on the client IP, and without this every request
+   * arriving through a proxy carries the proxy's address instead — collapsing
+   * all callers into one bucket, so a single client can lock everyone out.
+   * Set it to the number of proxies actually in front of the app (1 for
+   * Vercel/Railway/a single nginx). It stays 0 by default because trusting a
+   * forwarded header that nothing sets would let a client spoof its own IP.
+   */
+  trustProxy: numberEnv('TRUST_PROXY', 0),
+
   rateLimit: {
     windowMs: numberEnv('RATE_LIMIT_WINDOW_MS', 30 * 60 * 1000),
     maxRequests: numberEnv('RATE_LIMIT_MAX_REQUESTS', 1000),

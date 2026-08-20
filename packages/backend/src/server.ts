@@ -26,6 +26,11 @@ import {
 export function createApp(): express.Express {
   const app = express();
 
+  // Must be set before the rate limiter, which reads req.ip.
+  if (config.trustProxy > 0) {
+    app.set('trust proxy', config.trustProxy);
+  }
+
   // First in the chain: everything after it is logged and carries a request id.
   app.use(requestLogger);
 

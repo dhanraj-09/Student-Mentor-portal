@@ -120,6 +120,36 @@ export async function setKeyVersion(
   );
 }
 
+/**
+ * Discards every key generation for a meeting and returns it to version 0.
+ *
+ * Envelopes are sealed to a specific browser's device key, so if every
+ * participant moves to a new browser nobody can open the current key and
+ * nobody is left who could reseal it — the meeting becomes permanently
+ * unjoinable. Clearing the material lets the next participant to open the
+ * call mint a fresh key, exactly as they would for a brand new meeting.
+ *
+ * The rows go together in one transaction: a surviving envelope or request
+ * from the discarded generation would be sealed to a key that no longer has
+ * any meaning.
+ */
+export async function resetKeyMaterial(meetingId: string): Promise<void> {
+  await withTransaction(async (connection) => {
+    await connection.query(
+      `DELETE FROM e2ee_key_envelopes WHERE meeting_id = ?`,
+      [meetingId]
+    );
+    await connection.query(
+      `DELETE FROM e2ee_key_requests WHERE meeting_id = ?`,
+      [meetingId]
+    );
+    await connection.query(
+      `UPDATE meetings SET e2ee_key_version = 0 WHERE meeting_id = ?`,
+      [meetingId]
+    );
+  });
+}
+
 /* -------------------------------------------------------------------------- */
 /* Device keys                                                                 */
 /* -------------------------------------------------------------------------- */

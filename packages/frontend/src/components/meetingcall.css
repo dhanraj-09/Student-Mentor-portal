@@ -424,3 +424,9 @@
     min-height: 200px;
   }
 }
+
+/* Failure text inside an existing notice banner. */
+.mc-notice-error {
+  color: #b42318;
+  font-weight: 600;
+}
