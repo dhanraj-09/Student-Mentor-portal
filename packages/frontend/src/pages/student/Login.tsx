@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getApiErrorMessage, loginStudent } from '../../api/api';
+import PasswordInput from '../../components/PasswordInput';
 import './styles/login.css';
 
 const Login = () => {
@@ -75,8 +76,7 @@ const Login = () => {
 
             <div className="single-input-group">
               <label htmlFor="password">Password</label>
-              <input
-                type="password"
+              <PasswordInput
                 id="password"
                 placeholder="Enter your password"
                 value={password}
@@ -114,6 +114,13 @@ const Login = () => {
             New student?{' '}
             <Link to="/register" className="orange-link">
               Create your profile
+            </Link>
+          </p>
+
+          <p className="redirect-text" style={{ marginTop: '12px' }}>
+            Are you a faculty member?
+            <Link to="/faculty-login" className="orange-link">
+              Faculty login
             </Link>
           </p>
         </div>

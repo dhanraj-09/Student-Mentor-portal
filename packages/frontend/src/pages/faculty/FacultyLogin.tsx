@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { PASSWORD_MIN_LENGTH, isValidPassword } from 'shared';
 import {
   getApiErrorMessage,
@@ -8,6 +8,7 @@ import {
   registerFaculty,
 } from '../../api/api';
 import type { FacultySignupForm } from '../../api/api';
+import PasswordInput from '../../components/PasswordInput';
 import './teacherlogin.css';
 
 const FacultyLogin = () => {
@@ -109,8 +110,7 @@ const FacultyLogin = () => {
               </div>
               <div className="input-group">
                 <label>Password</label>
-                <input
-                  type="password"
+                <PasswordInput
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
                   required
@@ -147,8 +147,7 @@ const FacultyLogin = () => {
                 </div>
                 <div className="input-group">
                   <label>Password (min {PASSWORD_MIN_LENGTH} characters)</label>
-                  <input
-                    type="password"
+                  <PasswordInput
                     name="password"
                     onChange={handleSignupChange}
                     minLength={PASSWORD_MIN_LENGTH}
@@ -207,6 +206,11 @@ const FacultyLogin = () => {
             </form>
           </div>
         </div>
+
+        <p className="auth-switch">
+          Are you a student?
+          <Link to="/">Student login</Link>
+        </p>
       </div>
     </div>
   );
