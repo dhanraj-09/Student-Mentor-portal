@@ -33,6 +33,18 @@ npm install
 
 This installs dependencies for all packages (monorepo setup).
 
+Background blur needs the MediaPipe segmentation runtime staged into the
+frontend's `public/` directory:
+
+```bash
+npm run assets:mediapipe
+```
+
+The library would otherwise fetch that runtime from a CDN mid-call, making a
+feature depend on a third party being reachable from every participant's
+browser. The staged copy is git-ignored (it is ~19MB of WebAssembly), so rerun
+this after a fresh `npm install`. Skipping it only disables blur.
+
 ### Environment
 
 ```bash

@@ -1,3 +1,8 @@
+import {
+  BackgroundProcessor,
+  supportsBackgroundProcessors,
+} from '@livekit/track-processors';
+import type { LocalVideoTrack } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   BaseKeyProvider,
@@ -169,15 +174,26 @@ export interface UseMeetingCallResult {
   micOn: boolean;
   camOn: boolean;
   screenSharing: boolean;
+  /** Background blur, applied locally before the frame is encrypted. */
+  blurOn: boolean;
+  blurBusy: boolean;
+  blurSupported: boolean;
   e2eeActive: boolean;
+  /** Exposed so chat, reactions and recording can use the same connection. */
+  room: Room | null;
   audioBlocked: boolean;
   toggleMic: () => Promise<void>;
   toggleCam: () => Promise<void>;
   toggleScreenShare: () => Promise<void>;
+  toggleBlur: () => Promise<void>;
+  switchDevice: (kind: MediaDeviceKind, deviceId: string) => Promise<void>;
   enableAudio: () => Promise<void>;
   leave: () => Promise<void>;
   retry: () => void;
 }
+
+/** Strong enough to obscure a room without eating the subject's edges. */
+const BLUR_RADIUS = 12;
 
 export function useMeetingCall(
   options: UseMeetingCallOptions
@@ -192,6 +208,13 @@ export function useMeetingCall(
   const [micOn, setMicOn] = useState(options.microphoneEnabled);
   const [camOn, setCamOn] = useState(options.cameraEnabled);
   const [screenSharing, setScreenSharing] = useState(false);
+  const [blurOn, setBlurOn] = useState(false);
+  const [blurBusy, setBlurBusy] = useState(false);
+  // Built once: constructing it downloads and initialises the segmentation
+  // model, which is the multi-second pause on first use.
+  const blurProcessorRef = useRef<ReturnType<
+    typeof BackgroundProcessor
+  > | null>(null);
   const [e2eeActive, setE2eeActive] = useState(false);
   const [audioBlocked, setAudioBlocked] = useState(false);
   const [attempt, setAttempt] = useState(0);
@@ -227,10 +250,29 @@ export function useMeetingCall(
       dynacast: true,
       // `encryption` (not the deprecated `e2ee`) also encrypts data messages.
       encryption: { keyProvider, worker },
+      // 540p24 rather than 720p30. Every frame is encrypted individually, and
+      // background blur runs a segmentation model over each one, so capture
+      // size drives CPU on the sending machine more than link bandwidth does.
       videoCaptureDefaults: {
-        resolution: { width: 1280, height: 720, frameRate: 30 },
+        resolution: { width: 960, height: 540, frameRate: 24 },
       },
       audioCaptureDefaults: { echoCancellation: true, noiseSuppression: true },
+      publishDefaults: {
+        // Simulcast encodes three resolutions of every frame. That pays off in
+        // a large room where subscribers need different qualities; in a
+        // two-person mentoring call it triples encode and encryption work for
+        // no one's benefit.
+        simulcast: false,
+        // VP8 is markedly cheaper to encode than VP9/AV1 and avoids the
+        // SVC paths that interact badly with per-frame encryption.
+        videoCodec: 'vp8',
+        videoEncoding: { maxBitrate: 900_000, maxFramerate: 24 },
+        // Keep motion smooth when the link tightens; a mentoring call is
+        // people talking, where stutter reads far worse than softness.
+        degradationPreference: 'maintain-framerate',
+        dtx: true,
+        red: true,
+      },
     });
 
     roomRef.current = call;
@@ -321,6 +363,19 @@ export function useMeetingCall(
             .catch(onMediaError);
         }
 
+        // Pull the segmentation assets into the HTTP cache now, while the
+        // user is settling into the call, rather than when they click Blur.
+        if (supportsBackgroundProcessors()) {
+          void Promise.all([
+            fetch(
+              `${window.location.origin}/mediapipe/selfie_segmenter.tflite`
+            ),
+            fetch(
+              `${window.location.origin}/mediapipe/wasm/vision_wasm_internal.wasm`
+            ),
+          ]).catch(() => undefined);
+        }
+
         if (!cancelled) {
           setMicOn(call.localParticipant.isMicrophoneEnabled);
           setCamOn(call.localParticipant.isCameraEnabled);
@@ -393,6 +448,74 @@ export function useMeetingCall(
     }
   }, []);
 
+  /**
+   * Blurs whatever is behind the speaker.
+   *
+   * Segmentation runs in this browser on the raw camera frames, before
+   * encryption and before anything leaves the machine — the blurred image is
+   * what gets encrypted and sent, so the real background is never transmitted
+   * and the server could not recover it even if it tried.
+   *
+   * Assets are served from this app's own origin (see
+   * scripts/mediapipe-assets.mjs) rather than a CDN, so turning blur on
+   * mid-call does not depend on a third party being reachable.
+   */
+  const toggleBlur = useCallback(async (): Promise<void> => {
+    const call = roomRef.current;
+    if (call === null) return;
+
+    const publication = call.localParticipant.getTrackPublication(
+      Track.Source.Camera
+    );
+    const track = publication?.track as LocalVideoTrack | undefined;
+    if (track === undefined) {
+      setError('Turn the camera on before changing the background.');
+      return;
+    }
+
+    setBlurBusy(true);
+    try {
+      if (track.getProcessor() !== undefined) {
+        await track.stopProcessor();
+        setBlurOn(false);
+      } else {
+        blurProcessorRef.current ??= BackgroundProcessor({
+          mode: 'background-blur',
+          blurRadius: BLUR_RADIUS,
+          assetPaths: {
+            tasksVisionFileSet: `${window.location.origin}/mediapipe/wasm`,
+            modelAssetPath: `${window.location.origin}/mediapipe/selfie_segmenter.tflite`,
+          },
+        });
+        await track.setProcessor(blurProcessorRef.current);
+        setBlurOn(true);
+      }
+    } catch (blurError) {
+      setBlurOn(false);
+      setError(
+        blurError instanceof Error
+          ? `Background blur failed: ${blurError.message}`
+          : 'Background blur is not available on this device.'
+      );
+    } finally {
+      setBlurBusy(false);
+    }
+  }, []);
+
+  /** Switches the active camera or microphone without dropping the call. */
+  const switchDevice = useCallback(
+    async (kind: MediaDeviceKind, deviceId: string): Promise<void> => {
+      const call = roomRef.current;
+      if (call === null) return;
+      try {
+        await call.switchActiveDevice(kind, deviceId);
+      } catch (deviceError) {
+        setError(describeMediaError(deviceError));
+      }
+    },
+    []
+  );
+
   const toggleScreenShare = useCallback(async (): Promise<void> => {
     const call = roomRef.current;
     if (call === null) return;
@@ -441,11 +564,17 @@ export function useMeetingCall(
     micOn,
     camOn,
     screenSharing,
+    blurOn,
+    blurBusy,
+    blurSupported: supportsBackgroundProcessors(),
     e2eeActive,
+    room,
     audioBlocked,
     toggleMic,
     toggleCam,
     toggleScreenShare,
+    toggleBlur,
+    switchDevice,
     enableAudio,
     leave,
     retry,

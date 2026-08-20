@@ -17,7 +17,8 @@
     "livekit": "node scripts/livekit-dev.mjs",
     "db:up": "docker compose -f infra/mysql/docker-compose.local.yml up -d",
     "db:down": "docker compose -f infra/mysql/docker-compose.local.yml down",
-    "seed": "node infra/mysql/seed-dev.mjs"
+    "seed": "node infra/mysql/seed-dev.mjs",
+    "assets:mediapipe": "node scripts/mediapipe-assets.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

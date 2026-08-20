@@ -3,7 +3,13 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['**/dist/**', '**/node_modules/**', '**/*.config.js'],
+    ignores: [
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/*.config.js',
+      // Vendored MediaPipe runtime staged for background blur; not our source.
+      '**/public/mediapipe/**',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

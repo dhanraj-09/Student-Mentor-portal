@@ -58,7 +58,7 @@ const FacultyMeetingCall = () => {
       meetingId={id}
       title="Mentoring call"
       subtitle={studentName !== '' ? `With ${studentName}` : undefined}
-      canRotateKey
+      canManageKeys
       onLeave={() => navigate('/faculty-meetings')}
     />
   );

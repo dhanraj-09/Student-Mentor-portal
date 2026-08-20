@@ -40,3 +40,6 @@ out/
 
 # Locally downloaded LiveKit dev server
 .livekit/
+
+# Staged MediaPipe assets for background blur (see scripts/mediapipe-assets.mjs)
+packages/frontend/public/mediapipe/

@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@livekit/track-processors": "^0.7.2",
     "axios": "^1.6.0",
     "livekit-client": "^2.22.0",
     "lucide-react": "^0.400.0",
