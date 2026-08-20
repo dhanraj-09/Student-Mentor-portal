@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { PASSWORD_MIN_LENGTH, isValidPassword } from 'shared';
 import {
   getApiErrorMessage,
@@ -207,6 +207,10 @@ const FacultyLogin = () => {
             </form>
           </div>
         </div>
+
+        <p className="faculty-login-switch">
+          Are you a student? <Link to="/">Student sign in</Link>
+        </p>
       </div>
     </div>
   );

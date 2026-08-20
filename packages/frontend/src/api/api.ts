@@ -72,9 +72,22 @@ function getActiveRole(): UserType | null {
   return null;
 }
 
-function redirectToLogin(): void {
-  if (window.location.pathname !== '/') {
-    window.location.href = '/';
+const LOGIN_PATHS: Record<UserType, string> = {
+  student: '/',
+  faculty: '/faculty-login',
+};
+
+/**
+ * Sends an expired session back to the form it came from.
+ *
+ * Landing everyone on the student login left a mentor typing their email into
+ * a field that looks up registration numbers, which can only ever answer
+ * "Invalid credentials" — with no link anywhere to the faculty form.
+ */
+function redirectToLogin(role: UserType | null): void {
+  const target = role === null ? '/' : LOGIN_PATHS[role];
+  if (window.location.pathname !== target) {
+    window.location.href = target;
   }
 }
 
@@ -125,8 +138,11 @@ apiClient.interceptors.response.use(
         original.headers.Authorization = `Bearer ${newToken}`;
         return await apiClient(original);
       } catch (refreshError) {
+        // Read the role before clearing it: the session is what identifies
+        // which login form to return to.
+        const role = getActiveRole();
         clearClientSession();
-        redirectToLogin();
+        redirectToLogin(role);
         return Promise.reject(refreshError);
       }
     }

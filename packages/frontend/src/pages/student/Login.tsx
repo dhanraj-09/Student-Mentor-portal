@@ -116,6 +116,15 @@ const Login = () => {
               Create your profile
             </Link>
           </p>
+
+          {/* This form looks up a registration number, so a mentor signing in
+              here can only ever get "Invalid credentials". */}
+          <p className="redirect-text">
+            Are you a mentor?{' '}
+            <Link to="/faculty-login" className="orange-link">
+              Faculty sign in
+            </Link>
+          </p>
         </div>
       </div>
     </div>

@@ -132,6 +132,14 @@ export const config = {
   rateLimit: {
     windowMs: numberEnv('RATE_LIMIT_WINDOW_MS', 30 * 60 * 1000),
     maxRequests: numberEnv('RATE_LIMIT_MAX_REQUESTS', 1000),
+    /**
+     * Login attempts are counted per client IP. Behind a reverse proxy every
+     * request arrives from the proxy's address unless `trust proxy` is set, so
+     * all users end up sharing one bucket — which is why this needs to be
+     * raisable for local multi-device testing rather than hard-coded.
+     */
+    loginWindowMs: numberEnv('LOGIN_RATE_LIMIT_WINDOW_MS', 15 * 60 * 1000),
+    loginMaxRequests: numberEnv('LOGIN_RATE_LIMIT_MAX_REQUESTS', 25),
   },
 } as const;
 
