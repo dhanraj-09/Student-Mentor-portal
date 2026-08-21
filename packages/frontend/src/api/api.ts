@@ -6,6 +6,8 @@ import type {
   FacultyLoginResponse,
   MeetingSkillOption,
   MessageResponse,
+  MessageThread,
+  Page,
   Query,
   QueryStatus,
   RefreshTokenResponse,
@@ -14,6 +16,7 @@ import type {
   Student,
   StudentDashboard,
   StudentLoginResponse,
+  ThreadSummary,
   UserType,
 } from 'shared';
 import type {
@@ -302,9 +305,12 @@ export function updateStudentData(
 }
 
 export function getStudentQueries(
-  registration_no: string
-): Promise<AxiosResponse<Query[]>> {
-  return apiClient.get<Query[]>(`/api/student/${registration_no}/queries`);
+  registration_no: string,
+  params: { page?: number; limit?: number } = {}
+): Promise<AxiosResponse<Page<Query>>> {
+  return apiClient.get<Page<Query>>(`/api/student/${registration_no}/queries`, {
+    params,
+  });
 }
 
 export function createQuery(
@@ -335,9 +341,12 @@ export function getFacultyData(email: string): Promise<AxiosResponse<Faculty>> {
 }
 
 export function getFacultyQueries(
-  email: string
-): Promise<AxiosResponse<Query[]>> {
-  return apiClient.get<Query[]>(`/api/faculty/${email}/queries`);
+  email: string,
+  params: { page?: number; limit?: number } = {}
+): Promise<AxiosResponse<Page<Query>>> {
+  return apiClient.get<Page<Query>>(`/api/faculty/${email}/queries`, {
+    params,
+  });
 }
 
 export function getAssignedStudents(): Promise<AxiosResponse<Student[]>> {
@@ -558,15 +567,22 @@ export function getFacultyDashboard(): Promise<
 /* -------------------------------------------------------------------------- */
 
 export function getFacultyResources(
-  email: string
-): Promise<AxiosResponse<Resource[]>> {
-  return apiClient.get<Resource[]>(`/api/faculty/${email}/resources`);
+  email: string,
+  params: { page?: number; limit?: number } = {}
+): Promise<AxiosResponse<Page<Resource>>> {
+  return apiClient.get<Page<Resource>>(`/api/faculty/${email}/resources`, {
+    params,
+  });
 }
 
 export function getStudentResources(
-  registration_no: string
-): Promise<AxiosResponse<Resource[]>> {
-  return apiClient.get<Resource[]>(`/api/student/${registration_no}/resources`);
+  registration_no: string,
+  params: { page?: number; limit?: number } = {}
+): Promise<AxiosResponse<Page<Resource>>> {
+  return apiClient.get<Page<Resource>>(
+    `/api/student/${registration_no}/resources`,
+    { params }
+  );
 }
 
 export function createResource(
@@ -592,4 +608,49 @@ export function deleteResource(
   resourceId: number
 ): Promise<AxiosResponse<MessageResponse>> {
   return apiClient.delete<MessageResponse>(`/api/resources/${resourceId}`);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Direct messages                                                             */
+/*                                                                             */
+/* Server-stored, so readable by whoever runs the database — unlike the        */
+/* in-call chat, which never leaves the encrypted data channel.                */
+/* -------------------------------------------------------------------------- */
+
+export function getStudentThread(
+  params: { page?: number; limit?: number } = {}
+): Promise<AxiosResponse<MessageThread>> {
+  return apiClient.get<MessageThread>('/api/messages/student', { params });
+}
+
+export function getFacultyThreads(
+  email: string
+): Promise<AxiosResponse<ThreadSummary[]>> {
+  return apiClient.get<ThreadSummary[]>(`/api/faculty/${email}/messages`);
+}
+
+export function getFacultyThread(
+  registration_no: string,
+  params: { page?: number; limit?: number } = {}
+): Promise<AxiosResponse<MessageThread>> {
+  return apiClient.get<MessageThread>(
+    `/api/messages/faculty/${registration_no}`,
+    { params }
+  );
+}
+
+export function sendDirectMessage(payload: {
+  body: string;
+  student_id?: string;
+}): Promise<AxiosResponse<{ message: string; messageId: number }>> {
+  return apiClient.post<{ message: string; messageId: number }>(
+    '/api/messages',
+    payload
+  );
+}
+
+export function markThreadRead(
+  student_id?: string
+): Promise<AxiosResponse<MessageResponse>> {
+  return apiClient.put<MessageResponse>('/api/messages/read', { student_id });
 }

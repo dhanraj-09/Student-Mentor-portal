@@ -19,7 +19,7 @@ const StudentResources = () => {
     const load = async (): Promise<void> => {
       try {
         const response = await getStudentResources(registrationNo);
-        setResources(response.data);
+        setResources(response.data.items);
         setError(null);
       } catch (loadError) {
         setError(getApiErrorMessage(loadError, 'Could not load resources'));

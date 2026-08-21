@@ -4,11 +4,13 @@ import cookieParser from 'cookie-parser';
 import { API_PREFIX, AUTH_PREFIX } from 'shared';
 import { config } from './config.js';
 import { errorHandler, notFoundHandler } from './errors/index.js';
+import { healthRoutes } from './routes/health.js';
 import { requestLogger } from './logging/loggerMiddleware.js';
 import { apiLimiter } from './middleware/rateLimiter.js';
 import { authRoutes } from './routes/auth/index.js';
 import {
   assignmentRoutes,
+  messageRoutes,
   queryRoutes,
   resourceRoutes,
 } from './routes/community/index.js';
@@ -56,6 +58,7 @@ export function createApp(): express.Express {
   // literal segment as a parameter. Profile is therefore mounted last.
   app.use(API_PREFIX, dashboardRoutes);
   app.use(API_PREFIX, resourceRoutes);
+  app.use(API_PREFIX, messageRoutes);
   app.use(API_PREFIX, assignmentRoutes);
   app.use(API_PREFIX, queryRoutes);
   app.use(API_PREFIX, studentMeetingRoutes);
@@ -64,9 +67,8 @@ export function createApp(): express.Express {
   app.use(API_PREFIX, studentProfileRoutes);
   app.use(API_PREFIX, facultyProfileRoutes);
 
-  app.get('/health', (_req, res) => {
-    res.status(200).json({ status: 'Server is running' });
-  });
+  // Liveness and readiness; see routes/health.ts for why they differ.
+  app.use(healthRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

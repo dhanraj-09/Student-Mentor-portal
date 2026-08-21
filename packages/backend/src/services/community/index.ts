@@ -20,3 +20,12 @@ export {
   deleteResource,
 } from './resourcesService.js';
 export type { ResourceErrorCode } from './resourcesService.js';
+export {
+  getStudentThread,
+  getFacultyThread,
+  listFacultyThreads,
+  sendMessage,
+  markRead,
+  MAX_MESSAGE_LENGTH,
+} from './messagesService.js';
+export type { MessageErrorCode, ThreadView } from './messagesService.js';

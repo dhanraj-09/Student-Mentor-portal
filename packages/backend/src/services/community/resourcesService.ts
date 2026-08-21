@@ -13,6 +13,7 @@ import {
 import type { ResourceRow } from '../../models/community/index.js';
 import { toNullableString } from '../../utils/helpers.js';
 import type { Result } from '../../utils/helpers.js';
+import type { PageRequest } from '../../utils/pagination.js';
 
 export type ResourceErrorCode =
   | 'MISSING_TITLE'
@@ -63,15 +64,25 @@ function validate(
 }
 
 export function listFacultyResources(
-  facultyEmail: string
+  facultyEmail: string,
+  page?: PageRequest
 ): Promise<ResourceRow[]> {
-  return findResourcesByFaculty(facultyEmail);
+  return findResourcesByFaculty(
+    facultyEmail,
+    page === undefined ? undefined : page.limit + 1,
+    page?.offset
+  );
 }
 
 export function listStudentResources(
-  registrationNo: string
+  registrationNo: string,
+  page?: PageRequest
 ): Promise<ResourceRow[]> {
-  return findResourcesForStudent(registrationNo);
+  return findResourcesForStudent(
+    registrationNo,
+    page === undefined ? undefined : page.limit + 1,
+    page?.offset
+  );
 }
 
 export async function createResource(

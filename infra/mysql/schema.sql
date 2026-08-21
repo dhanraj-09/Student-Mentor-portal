@@ -119,6 +119,27 @@ CREATE TABLE IF NOT EXISTS resources (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------------------------------------------------------------
+-- Direct messages between a student and their mentor (see
+-- migrations/003_messages.sql). Stored server-side in plaintext, unlike the
+-- in-call chat which rides the meeting's end-to-end encrypted data channel.
+-- ---------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS messages (
+  message_id    INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  student_id    VARCHAR(64) NOT NULL,
+  faculty_email VARCHAR(191) NOT NULL,
+  sender_type   ENUM('student', 'faculty') NOT NULL,
+  body          TEXT NOT NULL,
+  created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  read_at       TIMESTAMP NULL,
+  CONSTRAINT fk_messages_student FOREIGN KEY (student_id)
+    REFERENCES student(registration_no) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_messages_faculty FOREIGN KEY (faculty_email)
+    REFERENCES faculty(email) ON DELETE CASCADE ON UPDATE CASCADE,
+  INDEX idx_messages_thread (student_id, faculty_email, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------------------------
 -- End-to-end encryption key distribution (see migrations/001_video_meetings.sql
 -- for the equivalent migration to run against an existing database).
 -- ---------------------------------------------------------------------------

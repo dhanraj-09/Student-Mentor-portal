@@ -60,7 +60,7 @@ const FacultyDashboard = () => {
 
     try {
       const queriesRes = await getFacultyQueries(facultyEmail);
-      setQueries(Array.isArray(queriesRes.data) ? queriesRes.data : []);
+      setQueries(queriesRes.data.items);
     } catch (error) {
       console.error('Failed to load queries', error);
       setQueries([]);

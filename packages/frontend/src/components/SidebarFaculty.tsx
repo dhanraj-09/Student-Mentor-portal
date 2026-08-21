@@ -39,6 +39,12 @@ const SidebarFaculty = () => {
         </div>
         <div
           className="nav-item-faculty"
+          onClick={() => navigate('/faculty-chat')}
+        >
+          <span>Chat</span>
+        </div>
+        <div
+          className="nav-item-faculty"
           onClick={() => navigate('/faculty-resources')}
         >
           <span>Resources</span>

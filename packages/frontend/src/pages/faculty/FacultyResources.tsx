@@ -35,6 +35,9 @@ const FacultyResources = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Lists are paged; the page size is generous, so this is a nudge rather
+  // than a pager for now.
+  const [hasMore, setHasMore] = useState(false);
 
   const email = faculty?.email ?? null;
 
@@ -42,7 +45,8 @@ const FacultyResources = () => {
     if (email === null) return;
     try {
       const response = await getFacultyResources(email);
-      setResources(response.data);
+      setResources(response.data.items);
+      setHasMore(response.data.hasMore);
       setError(null);
     } catch (loadError) {
       setError(getApiErrorMessage(loadError, 'Could not load resources'));
@@ -220,6 +224,12 @@ const FacultyResources = () => {
             </li>
           ))}
         </ul>
+      )}
+
+      {hasMore && (
+        <p className="resources-empty">
+          Showing the most recent resources only.
+        </p>
       )}
     </div>
   );

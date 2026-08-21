@@ -318,7 +318,13 @@ describe('GET /api/student/:registration_no/resources', () => {
       .set('Authorization', `Bearer ${studentToken}`);
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual([]);
+    // Lists are paged, so the body is an envelope rather than a bare array.
+    expect(response.body).toEqual({
+      items: [],
+      page: 1,
+      pageSize: 25,
+      hasMore: false,
+    });
   });
 });
 
@@ -411,5 +417,113 @@ describe('POST /api/meetings/:id/room/reset-keys', () => {
     const response = await request(app).post('/api/meetings/5/room/reset-keys');
 
     expect(response.status).toBe(401);
+  });
+});
+
+describe('direct messages', () => {
+  it('refuses to send without a token', async () => {
+    // This route was briefly unauthenticated; the crash that revealed it was
+    // luck, so the guard is pinned here.
+    const response = await request(app)
+      .post('/api/messages')
+      .send({ body: 'hello' });
+
+    expect(response.status).toBe(401);
+    expect(mutate).not.toHaveBeenCalled();
+  });
+
+  it('refuses to mark a thread read without a token', async () => {
+    const response = await request(app).put('/api/messages/read').send({});
+
+    expect(response.status).toBe(401);
+  });
+
+  it('lets a student message their own mentor', async () => {
+    const response = await request(app)
+      .post('/api/messages')
+      .set('Authorization', `Bearer ${studentToken}`)
+      .send({ body: 'Could we discuss my project?' });
+
+    expect(response.status).toBe(201);
+    // The recipient comes from the student's own assignment, never the body.
+    const params = mutate.mock.calls[0][1];
+    expect(params[0]).toBe(STUDENT_REGISTRATION_NO);
+    expect(params[1]).toBe(FACULTY_EMAIL);
+    expect(params[2]).toBe('student');
+  });
+
+  it('ignores a student_id supplied by a student', async () => {
+    await request(app)
+      .post('/api/messages')
+      .set('Authorization', `Bearer ${studentToken}`)
+      .send({ body: 'hi', student_id: 'SOMEBODY-ELSE' });
+
+    // A student cannot redirect a message at another conversation.
+    expect(mutate.mock.calls[0][1][0]).toBe(STUDENT_REGISTRATION_NO);
+  });
+
+  it('rejects an empty message before touching the database', async () => {
+    const response = await request(app)
+      .post('/api/messages')
+      .set('Authorization', `Bearer ${studentToken}`)
+      .send({ body: '   ' });
+
+    expect(response.status).toBe(400);
+    expect(mutate).not.toHaveBeenCalled();
+  });
+
+  it('rejects a message past the length limit', async () => {
+    const response = await request(app)
+      .post('/api/messages')
+      .set('Authorization', `Bearer ${studentToken}`)
+      .send({ body: 'x'.repeat(4001) });
+
+    expect(response.status).toBe(400);
+    expect(mutate).not.toHaveBeenCalled();
+  });
+
+  it('refuses a mentor writing to a student who is not theirs', async () => {
+    queryOne.mockImplementation((sql: string) =>
+      flat(sql).includes('FROM student')
+        ? Promise.resolve({
+            ...studentProfile(),
+            assigned_faculty_email: 'someone.else@example.edu',
+          })
+        : Promise.resolve(facultyProfile())
+    );
+
+    const response = await request(app)
+      .post('/api/messages')
+      .set('Authorization', `Bearer ${facultyToken}`)
+      .send({ student_id: STUDENT_REGISTRATION_NO, body: 'hello' });
+
+    expect(response.status).toBe(403);
+    expect(mutate).not.toHaveBeenCalled();
+  });
+
+  it('serves a student their own thread only', async () => {
+    query.mockResolvedValue([]);
+    queryOne.mockImplementation((sql: string) => {
+      const text = flat(sql);
+      if (text.includes('COUNT(*)')) return Promise.resolve({ unread: 0 });
+      if (text.includes('FROM student'))
+        return Promise.resolve(studentProfile());
+      return Promise.resolve(facultyProfile());
+    });
+
+    const response = await request(app)
+      .get('/api/messages/student')
+      .set('Authorization', `Bearer ${studentToken}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toMatchObject({ items: [], unread: 0, page: 1 });
+  });
+
+  it('rejects a faculty token on the student thread route', async () => {
+    const response = await request(app)
+      .get('/api/messages/student')
+      .set('Authorization', `Bearer ${facultyToken}`);
+
+    expect(response.status).toBe(403);
   });
 });

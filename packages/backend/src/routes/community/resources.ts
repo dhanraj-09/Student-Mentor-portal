@@ -13,6 +13,7 @@ import {
 } from '../../services/community/index.js';
 import type { ResourceErrorCode } from '../../services/community/index.js';
 import { asyncHandler, getFacultyUser } from '../../utils/helpers.js';
+import { parsePageRequest, toPage } from '../../utils/pagination.js';
 
 const router = Router();
 
@@ -40,7 +41,9 @@ router.get(
   '/faculty/:email/resources',
   facultyOwnership,
   asyncHandler(async (req, res) => {
-    res.status(200).json(await listFacultyResources(req.params.email));
+    const page = parsePageRequest(req.query);
+    const rows = await listFacultyResources(req.params.email, page);
+    res.status(200).json(toPage(rows, page));
   })
 );
 
@@ -48,9 +51,9 @@ router.get(
   '/student/:registration_no/resources',
   studentOwnership,
   asyncHandler(async (req, res) => {
-    res
-      .status(200)
-      .json(await listStudentResources(req.params.registration_no));
+    const page = parsePageRequest(req.query);
+    const rows = await listStudentResources(req.params.registration_no, page);
+    res.status(200).json(toPage(rows, page));
   })
 );
 

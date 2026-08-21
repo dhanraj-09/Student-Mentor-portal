@@ -18,3 +18,12 @@ export {
   deleteResource,
 } from './Resource.js';
 export type { ResourceRow, NewResource, ResourceUpdate } from './Resource.js';
+
+export {
+  findThread,
+  insertMessage,
+  markThreadRead,
+  countUnread,
+  findFacultyThreads,
+} from './Message.js';
+export type { MessageRow, NewMessage, ThreadSummaryRow } from './Message.js';

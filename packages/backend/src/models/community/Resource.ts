@@ -30,11 +30,16 @@ export interface ResourceUpdate {
 const RESOURCE_COLUMNS = `resource_id, faculty_email, title, description, url, category, created_at, updated_at`;
 
 export function findResourcesByFaculty(
-  facultyEmail: string
+  facultyEmail: string,
+  limit?: number,
+  offset = 0
 ): Promise<ResourceRow[]> {
+  const bound = limit === undefined ? '' : ' LIMIT ? OFFSET ?';
+  const params: unknown[] =
+    limit === undefined ? [facultyEmail] : [facultyEmail, limit, offset];
   return query<ResourceRow>(
-    `SELECT ${RESOURCE_COLUMNS} FROM resources WHERE faculty_email = ? ORDER BY created_at DESC`,
-    [facultyEmail]
+    `SELECT ${RESOURCE_COLUMNS} FROM resources WHERE faculty_email = ? ORDER BY created_at DESC${bound}`,
+    params
   );
 }
 
@@ -44,16 +49,21 @@ export function findResourcesByFaculty(
  * empty list rather than everybody's resources.
  */
 export function findResourcesForStudent(
-  registrationNo: string
+  registrationNo: string,
+  limit?: number,
+  offset = 0
 ): Promise<ResourceRow[]> {
+  const bound = limit === undefined ? '' : ' LIMIT ? OFFSET ?';
+  const params: unknown[] =
+    limit === undefined ? [registrationNo] : [registrationNo, limit, offset];
   return query<ResourceRow>(
     `SELECT r.resource_id, r.faculty_email, r.title, r.description, r.url,
             r.category, r.created_at, r.updated_at
      FROM resources r
      JOIN student s ON s.assigned_faculty_email = r.faculty_email
      WHERE s.registration_no = ?
-     ORDER BY r.created_at DESC`,
-    [registrationNo]
+     ORDER BY r.created_at DESC${bound}`,
+    params
   );
 }
 

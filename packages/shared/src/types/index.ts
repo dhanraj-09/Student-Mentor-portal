@@ -226,3 +226,50 @@ export interface ResourceInput {
   url?: string | null;
   category?: string | null;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Pagination                                                                  */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * One page of a list endpoint.
+ *
+ * `hasMore` rather than a total count: the server fetches one row beyond the
+ * page to answer it, which avoids a second COUNT query over the same table.
+ */
+export interface Page<T> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  hasMore: boolean;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Direct messages                                                             */
+/*                                                                             */
+/* Unlike the in-call chat, which rides the meeting's end-to-end encrypted     */
+/* data channel, these are stored on the server and readable by whoever        */
+/* operates it. The UI states that rather than implying otherwise.             */
+/* -------------------------------------------------------------------------- */
+
+export interface DirectMessage {
+  message_id: number;
+  student_id: string;
+  faculty_email: string;
+  sender_type: UserType;
+  body: string;
+  created_at: DateLike;
+  read_at: DateLike | null;
+}
+
+export interface MessageThread extends Page<DirectMessage> {
+  unread: number;
+}
+
+export interface ThreadSummary {
+  student_id: string;
+  student_name: string;
+  last_body: string | null;
+  last_at: DateLike | null;
+  unread: number;
+}
