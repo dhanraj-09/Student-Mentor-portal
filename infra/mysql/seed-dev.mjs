@@ -9,7 +9,54 @@
  *
  * Passwords come from SEED_FACULTY_PASSWORD / SEED_STUDENT_PASSWORD when set.
  */
+import mysql from 'mysql2/promise';
+
 const API = process.env.SEED_API_URL ?? 'http://localhost:8080';
+
+/**
+ * A student the college has provisioned but who has never logged in: the row
+ * exists with no password, which is what puts them into the first login flow.
+ * Registration through the API always sets a password, so this one is inserted
+ * directly, the way a student import would.
+ */
+const PROVISIONED = {
+  registration_no: process.env.SEED_PROVISIONED_REG ?? '229301777',
+  name: 'Harsh Depura',
+  email: process.env.SEED_PROVISIONED_EMAIL ?? 'harsh.depura@college.edu',
+};
+
+async function provisionPasswordlessStudent(facultyEmail) {
+  const connection = await mysql.createConnection({
+    host: process.env.DB_HOST ?? '127.0.0.1',
+    port: Number(process.env.DB_PORT ?? 3307),
+    user: process.env.DB_USER ?? 'portal',
+    password: process.env.DB_PASSWORD ?? 'portal',
+    database: process.env.DB_NAME ?? 'student_mentor',
+  });
+
+  try {
+    await connection.query(
+      `INSERT INTO student
+         (registration_no, name, email, degree, branch, year, password_hash, assigned_faculty_email)
+       VALUES (?, ?, ?, 'B.Tech', 'CSE', 3, NULL, ?)
+       ON DUPLICATE KEY UPDATE
+         email = VALUES(email),
+         password_hash = NULL,
+         assigned_faculty_email = VALUES(assigned_faculty_email)`,
+      [
+        PROVISIONED.registration_no,
+        PROVISIONED.name,
+        PROVISIONED.email,
+        facultyEmail,
+      ]
+    );
+    console.log(
+      `- provisioned ${PROVISIONED.registration_no} with no password (first login flow)`
+    );
+  } finally {
+    await connection.end();
+  }
+}
 
 const FACULTY = {
   name: 'Dr. Asha Mehta',
@@ -140,9 +187,14 @@ async function main() {
   });
   console.log(`- meeting ${second.meetingId} is accepted`);
 
+  await provisionPasswordlessStudent(FACULTY.email);
+
   console.log('\nSign in with:');
   console.log(`  faculty : ${FACULTY.email} / ${FACULTY.password}`);
   console.log(`  student : ${STUDENT.registration_no} / ${STUDENT.password}`);
+  console.log(
+    `  first login (no password set yet) : ${PROVISIONED.registration_no}`
+  );
 }
 
 main().catch((error) => {

@@ -16,6 +16,9 @@ import EditProfile from './pages/student/EditProfile';
 import Login from './pages/student/Login';
 import NewQueryForm from './pages/student/NewQueryForm';
 import RaiseQuery from './pages/student/RaiseQuery';
+import AuthenticatorSetup from './pages/student/AuthenticatorSetup';
+import SetNewPassword from './pages/student/SetNewPassword';
+import SetPassword from './pages/student/SetPassword';
 import SignUp from './pages/student/SignUp';
 import StudentMeetingCall from './pages/student/StudentMeetingCall';
 import StudentMeetings from './pages/student/StudentMeetings';
@@ -29,6 +32,14 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<SignUp />} />
         <Route path="/faculty-login" element={<FacultyLogin />} />
+
+        {/* First login: the student has no password yet (steps 3 to 8). */}
+        <Route path="/set-password" element={<SetPassword />} />
+        <Route
+          path="/set-password/authenticator"
+          element={<AuthenticatorSetup />}
+        />
+        <Route path="/set-password/new" element={<SetNewPassword />} />
 
         <Route element={<StudentLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />

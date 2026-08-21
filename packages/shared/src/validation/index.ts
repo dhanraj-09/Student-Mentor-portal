@@ -12,6 +12,30 @@ export function isValidPassword(password: unknown): password is string {
   return typeof password === 'string' && password.length >= PASSWORD_MIN_LENGTH;
 }
 
+export interface PasswordRuleCheck {
+  minLength: boolean;
+  mixedCase: boolean;
+  numberAndSymbol: boolean;
+}
+
+/**
+ * Rules for a password set through the first login flow, mirrored by the
+ * checklist on the "Set New Password" screen so the two cannot disagree.
+ */
+export function checkPasswordRules(password: unknown): PasswordRuleCheck {
+  const value = typeof password === 'string' ? password : '';
+  return {
+    minLength: value.length >= PASSWORD_MIN_LENGTH,
+    mixedCase: /[a-z]/.test(value) && /[A-Z]/.test(value),
+    numberAndSymbol: /[0-9]/.test(value) && /[^A-Za-z0-9]/.test(value),
+  };
+}
+
+export function isStrongPassword(password: unknown): password is string {
+  const rules = checkPasswordRules(password);
+  return rules.minLength && rules.mixedCase && rules.numberAndSymbol;
+}
+
 export function isValidMarks(marks: unknown): marks is number {
   const value = Number(marks);
   return Number.isInteger(value) && value >= MARKS_MIN && value <= MARKS_MAX;

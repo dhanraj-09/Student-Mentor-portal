@@ -107,6 +107,77 @@ npm run build -w backend
 
 ---
 
+## First login (password not set)
+
+Students are provisioned by the college without a password. The first time one
+tries to sign in, the portal detects that and walks them through setting one.
+
+```text
+1. Login attempt        registration number + any password
+        ↓
+2. Password Not Set     the account exists but has no password
+        ↓
+3. Choose a method      Outlook email link  |  Microsoft Authenticator
+        ↓                      ↓                        ↓
+4-6.                    link emailed,            QR code scanned,
+                        opened from Outlook      6-digit code verified
+        ↓                      ↓                        ↓
+7. Set New Password     both paths end at the same screen (rules checked live)
+        ↓
+8. Success  →  9. Login again  →  10. Dashboard (JWT access token)
+                                       ↓
+                                 11-12. access token expires, the refresh
+                                        cookie mints a new one silently
+```
+
+Routes: `/set-password`, `/set-password/authenticator`, `/set-password/new`.
+
+### How it is protected
+
+- The reset link carries a 32-byte random token. Only its **SHA-256 hash** is
+  stored, so a database leak cannot be turned back into a working link.
+- Tokens are **single use** and expire (30 minutes for the email link, 15 for
+  one issued after an authenticator code). Requesting a new one retires the old.
+- Both paths converge on one write: a valid token authorises exactly one
+  password change.
+- The password rules the screen shows are the rules the server enforces - both
+  call `checkPasswordRules` from `packages/shared`.
+- Requesting a link always answers the same way, so the endpoint cannot be used
+  to discover which registration numbers exist. Login is the one deliberate
+  exception: it has to say "password not set" for the flow to start, and it sits
+  behind the same login rate limit as any other attempt.
+
+### Configuration
+
+| Variable                                                                           | Purpose                                                                                  |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `APP_BASE_URL`                                                                     | Frontend origin the emailed link points at                                               |
+| `STUDENT_EMAIL_DOMAIN`                                                             | Used when a student row has no `email`; the address becomes `<registration_no>@<domain>` |
+| `PASSWORD_SETUP_EMAIL_TTL_MINUTES` / `PASSWORD_SETUP_TOTP_TTL_MINUTES`             | Token lifetimes (30 / 15)                                                                |
+| `TOTP_ISSUER`                                                                      | Label shown in Microsoft Authenticator                                                   |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` | Outgoing mail                                                                            |
+
+**Without SMTP configured the reset link is written to the server log instead of
+being sent.** That keeps local development working with no mail account, and is
+refused outright when `NODE_ENV=production`.
+
+### Database
+
+```bash
+mysql -h <host> -u <user> -p <database> < infra/mysql/migrations/002_first_login_password_setup.sql
+```
+
+It makes `student.password_hash` nullable, adds `student.email`, and creates
+`password_setup_tokens` and `student_totp`.
+
+### Trying it locally
+
+`npm run seed` provisions `229301777` with no password. Sign in with that
+registration number and any password to enter the flow. With no SMTP set up,
+copy the link from the backend log.
+
+---
+
 ## Video meetings
 
 A meeting moves through `pending → accepted → ongoing → completed`. Once the

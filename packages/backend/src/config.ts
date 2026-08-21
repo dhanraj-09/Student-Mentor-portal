@@ -141,6 +141,38 @@ export const config = {
    */
   trustProxy: numberEnv('TRUST_PROXY', 0),
 
+  /**
+   * First login flow: a provisioned student sets their password through a link
+   * emailed to them, or by pairing Microsoft Authenticator.
+   */
+  passwordSetup: {
+    /** Where the emailed link points, i.e. the frontend origin. */
+    appBaseUrl: optionalEnv('APP_BASE_URL', 'http://localhost:5173'),
+    /** Reset links are short lived; the email says 30 minutes. */
+    emailTokenTtlMinutes: numberEnv('PASSWORD_SETUP_EMAIL_TTL_MINUTES', 30),
+    /** A token minted after a verified authenticator code. */
+    totpTokenTtlMinutes: numberEnv('PASSWORD_SETUP_TOTP_TTL_MINUTES', 15),
+    /** Label shown in Microsoft Authenticator. */
+    totpIssuer: optionalEnv('TOTP_ISSUER', 'MARG Student Portal'),
+    /** Used when a student row has no explicit email address. */
+    studentEmailDomain: optionalEnv('STUDENT_EMAIL_DOMAIN', ''),
+  },
+
+  /**
+   * Outgoing mail. With no SMTP host configured the reset link is written to
+   * the server log instead, which keeps local development working without a
+   * mail account. That fallback refuses to run in production.
+   */
+  smtp: {
+    host: optionalEnv('SMTP_HOST', ''),
+    port: numberEnv('SMTP_PORT', 587),
+    secure: booleanEnv('SMTP_SECURE', false),
+    user: optionalEnv('SMTP_USER', ''),
+    password: optionalEnv('SMTP_PASSWORD', ''),
+    from: optionalEnv('SMTP_FROM', 'MARG Portal <noreply@localhost>'),
+    configured: optionalEnv('SMTP_HOST', '') !== '',
+  },
+
   rateLimit: {
     windowMs: numberEnv('RATE_LIMIT_WINDOW_MS', 30 * 60 * 1000),
     maxRequests: numberEnv('RATE_LIMIT_MAX_REQUESTS', 1000),

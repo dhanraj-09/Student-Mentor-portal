@@ -5,10 +5,11 @@ They are not part of `npm run lint`/`typecheck` because they need a live
 backend, frontend, database and LiveKit server; Playwright is therefore not a
 repository dependency either.
 
-| Script                 | What it checks                                                                                                                                                                                                                                                                              |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `meeting-call.mjs`     | Student and mentor sign in, the ongoing meeting card offers "Join call", both obtain an encryption key, connect, and **each decodes the other's end-to-end encrypted video**; mute/unmute, camera off/on, mentor key rotation, leave, and the remaining participant seeing the other leave. |
-| `encryption-proof.mjs` | A client holding the **LiveKit API key and secret** (i.e. whoever runs the SFU) joins the room, receives the routed packets and decodes **zero** frames. Also drops the network to check the reconnecting state and recovery.                                                               |
+| Script                 | What it checks                                                                                                                                                                                                                                                                                                                     |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `meeting-call.mjs`     | Student and mentor sign in, the ongoing meeting card offers "Join call", both obtain an encryption key, connect, and **each decodes the other's end-to-end encrypted video**; mute/unmute, camera off/on, mentor key rotation, leave, and the remaining participant seeing the other leave.                                        |
+| `first-login.mjs`      | The whole "password not set" flow: detection at login, the method chooser, the emailed link, the Microsoft Authenticator QR and code (a wrong code is rejected first), the password rules, signing in with the new password, the httpOnly refresh cookie and the silent token refresh, and that a used or unknown link is refused. |
+| `encryption-proof.mjs` | A client holding the **LiveKit API key and secret** (i.e. whoever runs the SFU) joins the room, receives the routed packets and decodes **zero** frames. Also drops the network to check the reconnecting state and recovery.                                                                                                      |
 
 ## Prerequisites
 
@@ -42,6 +43,7 @@ LIVEKIT_API_SECRET=secret
 ```bash
 node e2e/meeting-call.mjs
 node e2e/encryption-proof.mjs
+node e2e/first-login.mjs
 ```
 
 Each prints one `PASS`/`FAIL` line per check and exits non-zero on failure.

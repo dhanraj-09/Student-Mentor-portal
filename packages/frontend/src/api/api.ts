@@ -654,3 +654,79 @@ export function markThreadRead(
 ): Promise<AxiosResponse<MessageResponse>> {
   return apiClient.put<MessageResponse>('/api/messages/read', { student_id });
 }
+
+/* -------------------------------------------------------------------------- */
+/* First login: setting a password that was never set                          */
+/*                                                                             */
+/* These run before the student has a session, so they use plain requests with */
+/* no access token.                                                            */
+/* -------------------------------------------------------------------------- */
+
+export interface EmailResetResponse {
+  message: string;
+  /** Masked address the link was sent to, e.g. "22•••••01@college.edu". */
+  sent_to: string | null;
+}
+
+export interface AuthenticatorSetupResponse {
+  /** Data URL of the QR code for Microsoft Authenticator. */
+  qr_code: string;
+  /** The same secret, for manual entry. */
+  manual_key: string;
+  account: string;
+}
+
+export interface AuthenticatorVerifyResponse {
+  setup_token: string;
+  expires_in_minutes: number;
+}
+
+export interface SetupTokenResponse {
+  registration_no: string;
+  name: string;
+}
+
+export function requestPasswordEmail(
+  registration_no: string
+): Promise<AxiosResponse<EmailResetResponse>> {
+  return apiClient.post<EmailResetResponse>('/auth/password-setup/email', {
+    registration_no,
+  });
+}
+
+export function startAuthenticatorSetup(
+  registration_no: string
+): Promise<AxiosResponse<AuthenticatorSetupResponse>> {
+  return apiClient.post<AuthenticatorSetupResponse>(
+    '/auth/password-setup/authenticator/start',
+    { registration_no }
+  );
+}
+
+export function verifyAuthenticatorCode(
+  registration_no: string,
+  code: string
+): Promise<AxiosResponse<AuthenticatorVerifyResponse>> {
+  return apiClient.post<AuthenticatorVerifyResponse>(
+    '/auth/password-setup/authenticator/verify',
+    { registration_no, code }
+  );
+}
+
+export function checkPasswordSetupToken(
+  token: string
+): Promise<AxiosResponse<SetupTokenResponse>> {
+  return apiClient.get<SetupTokenResponse>('/auth/password-setup/token', {
+    params: { token },
+  });
+}
+
+export function completePasswordSetup(
+  token: string,
+  password: string
+): Promise<AxiosResponse<MessageResponse>> {
+  return apiClient.post<MessageResponse>('/auth/password-setup/complete', {
+    token,
+    password,
+  });
+}

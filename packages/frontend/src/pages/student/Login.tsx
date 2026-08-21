@@ -1,19 +1,24 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getApiErrorMessage, loginStudent } from '../../api/api';
+import { X } from 'lucide-react';
+import { getApiErrorMessage, hasStatus, loginStudent } from '../../api/api';
 import './styles/login.css';
+import './styles/setpassword.css';
 
 const Login = () => {
   const [registrationNo, setRegistrationNo] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [passwordNotSet, setPasswordNotSet] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setError('');
+
+    setPasswordNotSet(false);
 
     if (registrationNo.trim() === '' || password === '') {
       setError('Please enter both your Registration Number and Password.');
@@ -25,11 +30,53 @@ const Login = () => {
       await loginStudent(registrationNo.trim(), password);
       navigate('/dashboard');
     } catch (err) {
+      // 409 means the account exists but was provisioned without a password,
+      // which starts the first login flow instead of showing a login error.
+      if (hasStatus(err, 409)) {
+        setPasswordNotSet(true);
+        setError('');
+        return;
+      }
       setError(getApiErrorMessage(err, 'Login failed. Please try again.'));
     } finally {
       setSubmitting(false);
     }
   };
+
+  if (passwordNotSet) {
+    return (
+      <div className="sp-wrapper">
+        <div className="sp-card">
+          <div className="sp-icon sp-icon-error">
+            <X size={26} />
+          </div>
+          <h1 className="sp-title">Password Not Set</h1>
+          <p className="sp-subtitle">
+            Your password hasn&apos;t been set yet. Please set your password
+            first to access your account.
+          </p>
+          <button
+            className="sp-primary"
+            type="button"
+            onClick={() =>
+              navigate('/set-password', {
+                state: { registrationNo: registrationNo.trim() },
+              })
+            }
+          >
+            Reset Password
+          </button>
+          <button
+            className="sp-back"
+            type="button"
+            onClick={() => setPasswordNotSet(false)}
+          >
+            Back to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="login-wrapper">

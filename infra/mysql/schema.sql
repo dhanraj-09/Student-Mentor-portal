@@ -22,6 +22,9 @@ CREATE TABLE IF NOT EXISTS faculty (
 CREATE TABLE IF NOT EXISTS student (
   registration_no        VARCHAR(64) NOT NULL PRIMARY KEY,
   name                   VARCHAR(191) NOT NULL,
+  -- Where a password reset link is sent. NULL means the institutional address
+  -- derived from the registration number is used.
+  email                  VARCHAR(191) NULL UNIQUE,
   degree                 VARCHAR(191) NULL,
   branch                 VARCHAR(191) NULL,
   year                   INT          NULL,
@@ -29,7 +32,7 @@ CREATE TABLE IF NOT EXISTS student (
   dob                    DATE         NULL,
   linked_in              VARCHAR(255) NULL,
   github                 VARCHAR(255) NULL,
-  password_hash          VARCHAR(255) NOT NULL,
+  password_hash          VARCHAR(255) NULL,
   assigned_faculty_email VARCHAR(191) NULL,
   created_at             TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_student_faculty FOREIGN KEY (assigned_faculty_email)
@@ -181,4 +184,32 @@ CREATE TABLE IF NOT EXISTS e2ee_key_requests (
   CONSTRAINT fk_key_requests_meeting FOREIGN KEY (meeting_id)
     REFERENCES meetings(meeting_id) ON DELETE CASCADE,
   UNIQUE KEY uniq_key_request (meeting_id, requester_type, requester_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------------------------
+-- First login flow (see migrations/002_first_login_password_setup.sql).
+-- ---------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS password_setup_tokens (
+  token_id        INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  registration_no VARCHAR(64) NOT NULL,
+  token_hash      CHAR(64) NOT NULL,
+  purpose         ENUM('email', 'totp') NOT NULL,
+  expires_at      DATETIME NOT NULL,
+  used_at         DATETIME NULL,
+  created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_setup_tokens_student FOREIGN KEY (registration_no)
+    REFERENCES student(registration_no) ON DELETE CASCADE ON UPDATE CASCADE,
+  UNIQUE KEY uniq_setup_token_hash (token_hash),
+  INDEX idx_setup_tokens_student (registration_no)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS student_totp (
+  registration_no VARCHAR(64) NOT NULL PRIMARY KEY,
+  secret          VARCHAR(128) NOT NULL,
+  confirmed_at    DATETIME NULL,
+  created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_student_totp_student FOREIGN KEY (registration_no)
+    REFERENCES student(registration_no) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
