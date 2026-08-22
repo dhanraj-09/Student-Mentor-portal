@@ -7,6 +7,11 @@ export const apiLimiter = rateLimit({
   message: 'Too many requests. Please try again later',
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => {
+    if (req.method === 'OPTIONS') return true;
+    if (req.path.startsWith('/auth')) return true;
+    return false;
+  },
 });
 
 export const loginLimiter = rateLimit({
