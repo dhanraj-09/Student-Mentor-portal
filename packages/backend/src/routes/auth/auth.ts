@@ -47,7 +47,10 @@ function refreshCookieOptions(role: UserType): CookieOptions {
   return {
     httpOnly: true,
     secure: config.isProduction,
-    sameSite: 'lax',
+    // Cross-site in production (frontend and backend on different domains):
+    // the cookie is only sent if SameSite=None, which browsers require to be
+    // paired with Secure. Locally (same-site localhost) 'lax' over plain HTTP.
+    sameSite: config.isProduction ? 'none' : 'lax',
     path: REFRESH_COOKIE_PATHS[role],
     maxAge: REFRESH_COOKIE_MAX_AGE_MS,
   };
@@ -138,8 +141,12 @@ for (const role of ROLES) {
   });
 
   router.post(`/logout/${role}`, (_req, res) => {
+    // Match the attributes the cookie was set with so browsers clear it,
+    // including cross-site (SameSite=None; Secure) in production.
     res.clearCookie(REFRESH_COOKIE_NAMES[role], {
       path: REFRESH_COOKIE_PATHS[role],
+      secure: config.isProduction,
+      sameSite: config.isProduction ? 'none' : 'lax',
     });
     res.status(200).json({ message: 'Logged out successfully' });
   });
