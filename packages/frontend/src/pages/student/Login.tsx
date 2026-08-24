@@ -5,6 +5,7 @@ import { X } from 'lucide-react';
 import { getApiErrorMessage, hasStatus, loginStudent } from '../../api/api';
 import './styles/login.css';
 import './styles/setpassword.css';
+import PasswordInput from '../../components/PasswordInput';
 
 const Login = () => {
   const [registrationNo, setRegistrationNo] = useState('');
