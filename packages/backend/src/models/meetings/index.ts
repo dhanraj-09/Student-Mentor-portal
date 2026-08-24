@@ -11,3 +11,4 @@ export {
   completeMeeting,
 } from './Meeting.js';
 export type { MeetingRow, SkillOptionRow } from './Meeting.js';
+export * from './MeetingRoom.js';

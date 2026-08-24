@@ -1,5 +1,14 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { Calendar, CheckCircle, Circle, Clock, Plus, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Calendar,
+  CheckCircle,
+  Circle,
+  Clock,
+  Plus,
+  Video,
+  X,
+} from 'lucide-react';
 import type { MeetingStatus } from 'shared';
 import {
   getApiErrorMessage,
@@ -16,6 +25,7 @@ const TABS = ['All', 'Pending', 'Accepted', 'Ongoing', 'Completed'] as const;
 type Tab = (typeof TABS)[number];
 
 const StudentMeetings = () => {
+  const navigate = useNavigate();
   const { Student } = useContext(StudentContext);
   const regNo = Student?.registration_no;
   const hasMentor =
@@ -223,7 +233,26 @@ const StudentMeetings = () => {
               )}
 
               {m.status === 'ongoing' && (
-                <p className="sm-hint sm-live">● Meeting is in progress.</p>
+                <div className="sm-live-panel">
+                  <div className="sm-live-info">
+                    <span className="sm-live-dot" aria-hidden="true" />
+                    <div>
+                      <p className="sm-live-title">Meeting is live</p>
+                      <p className="sm-live-sub">
+                        End-to-end encrypted video call
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    className="sm-join-call"
+                    onClick={() =>
+                      navigate(`/student-meetings/${m.meeting_id}/call`)
+                    }
+                  >
+                    <Video size={17} />
+                    Join call
+                  </button>
+                </div>
               )}
 
               <div className="sm-meta">
