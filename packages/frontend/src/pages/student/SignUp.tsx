@@ -18,6 +18,7 @@ import {
   registerStudent,
 } from '../../api/api';
 import type { StudentSignupForm } from '../../api/api';
+import PasswordInput from '../../components/PasswordInput';
 import './styles/SignUp.css';
 
 type FormField = HTMLInputElement | HTMLSelectElement;
@@ -301,8 +302,7 @@ const Signup = () => {
                     <label>
                       Password * (min {PASSWORD_MIN_LENGTH} characters)
                     </label>
-                    <input
-                      type="password"
+                    <PasswordInput
                       name="password"
                       value={studentData.password}
                       onChange={handleInputChange}

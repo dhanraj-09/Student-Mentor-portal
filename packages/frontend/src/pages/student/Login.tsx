@@ -122,8 +122,7 @@ const Login = () => {
 
             <div className="single-input-group">
               <label htmlFor="password">Password</label>
-              <input
-                type="password"
+              <PasswordInput
                 id="password"
                 placeholder="Enter your password"
                 value={password}

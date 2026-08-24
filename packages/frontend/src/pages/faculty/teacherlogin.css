@@ -25,6 +25,24 @@
   margin: 0;
 }
 
+.auth-wrapper .auth-switch {
+  text-align: center;
+  margin: 18px 0 0;
+  color: #4b5563;
+  font-size: 14px;
+}
+
+.auth-wrapper .auth-switch a {
+  color: #f97316;
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 5px;
+}
+
+.auth-wrapper .auth-switch a:hover {
+  text-decoration: underline;
+}
+
 .auth-wrapper .toggle-container {
   display: flex;
   background: #f3f4f6;
