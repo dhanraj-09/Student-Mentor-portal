@@ -29,7 +29,9 @@ const db = {
 const results = [];
 function check(name, ok, detail = '') {
   results.push({ name, ok });
-  console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? ` :: ${detail}` : ''}`);
+  console.log(
+    `${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? ` :: ${detail}` : ''}`
+  );
 }
 
 async function withDb(fn) {
@@ -52,9 +54,10 @@ async function resetStudent() {
       `DELETE FROM password_setup_tokens WHERE registration_no = ?`,
       [REGISTRATION]
     );
-    await connection.query(`DELETE FROM student_totp WHERE registration_no = ?`, [
-      REGISTRATION,
-    ]);
+    await connection.query(
+      `DELETE FROM student_totp WHERE registration_no = ?`,
+      [REGISTRATION]
+    );
   });
 }
 
@@ -78,7 +81,9 @@ async function latestEmailLinkToken(page) {
 async function newPage(browser) {
   const context = await browser.newContext({ ignoreHTTPSErrors: true });
   const page = await context.newPage();
-  page.on('pageerror', (error) => console.log(`  [pageerror] ${error.message}`));
+  page.on('pageerror', (error) =>
+    console.log(`  [pageerror] ${error.message}`)
+  );
   return page;
 }
 
@@ -89,7 +94,9 @@ async function attemptLogin(page, password) {
   await page.getByRole('button', { name: /access dashboard/i }).click();
 }
 
-const browser = await chromium.launch({ args: ['--ignore-certificate-errors'] });
+const browser = await chromium.launch({
+  args: ['--ignore-certificate-errors'],
+});
 
 try {
   /* ------------------------------------------------- steps 1-3: detection */
@@ -162,11 +169,15 @@ try {
     qrSrc !== null && qrSrc.startsWith('data:image/png;base64,')
   );
 
-  const manualKey = (await authPage.locator('.sp-manual-key').innerText()).trim();
+  const manualKey = (
+    await authPage.locator('.sp-manual-key').innerText()
+  ).trim();
   check('a manual key is offered as a fallback', manualKey.length >= 16);
 
   await authPage.getByRole('button', { name: /i've added it/i }).click();
-  await authPage.getByText('Enter the 6-digit code').waitFor({ timeout: 10000 });
+  await authPage
+    .getByText('Enter the 6-digit code')
+    .waitFor({ timeout: 10000 });
 
   // Wrong code first: it must be refused.
   const boxes = authPage.locator('.sp-otp-box');
@@ -227,7 +238,8 @@ try {
   // through the refresh cookie, which is the silent refresh in the diagram.
   const refreshed = loginPage.waitForResponse(
     (response) =>
-      response.url().includes('/auth/refresh-token/') && response.status() === 200,
+      response.url().includes('/auth/refresh-token/') &&
+      response.status() === 200,
     { timeout: 20000 }
   );
   await loginPage.reload();
@@ -251,7 +263,10 @@ try {
     .waitFor({ timeout: 15000 })
     .then(() => true)
     .catch(() => false);
-  check('a used or unknown link shows the "no longer valid" screen', staleRefused);
+  check(
+    'a used or unknown link shows the "no longer valid" screen',
+    staleRefused
+  );
 
   const reuse = await fetch(`${API}/auth/password-setup/complete`, {
     method: 'POST',
@@ -278,5 +293,7 @@ try {
 }
 
 const failed = results.filter((result) => !result.ok);
-console.log(`\n${results.length - failed.length}/${results.length} checks passed`);
+console.log(
+  `\n${results.length - failed.length}/${results.length} checks passed`
+);
 if (failed.length > 0) process.exitCode = 1;
