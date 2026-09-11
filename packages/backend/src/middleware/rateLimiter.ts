@@ -25,7 +25,8 @@ export const apiLimiter = rateLimit({
   legacyHeaders: false,
   // Never rate-limit CORS preflight requests — a 429 on an OPTIONS carries no
   // CORS headers and surfaces in the browser as a misleading "CORS error".
-  skip: (req) => req.method === 'OPTIONS',
+  // /auth routes carry their own, stricter limiters.
+  skip: (req) => req.method === 'OPTIONS' || req.path.startsWith('/auth'),
 });
 
 export const loginLimiter = rateLimit({
