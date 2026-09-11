@@ -1,39 +1,35 @@
-# Dependencies
+# (b) Dependencies — re-installable, huge, never commit
 node_modules/
 
-# Lock files from other package managers (this repo uses npm)
-yarn.lock
-pnpm-lock.yaml
-
-# Build outputs
+# (b) Build output
 dist/
 build/
+out/
+.next/
 *.tsbuildinfo
 
-# Environment
+# (a) Secrets — CRITICAL. Keep .env.example, ignore the real ones
 .env
 .env.local
 .env.*.local
-*.pem
+.env.development
+.env.production
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
+# (b) Generated tool output
+graphify-out/
+coverage/
+playwright-report/
+test-results/
+.turbo/
+.vercel/
 
-# Logs
-logs/
+# (b) Logs
 *.log
 npm-debug.log*
-yarn-debug.log*
+pnpm-debug.log*
 
-# OS
+# (c) Editor / OS junk
+.idea/
 .DS_Store
 Thumbs.db
-
-# Dev server
-.next/
-out/
+*.swp

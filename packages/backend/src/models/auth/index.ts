@@ -10,3 +10,4 @@ export type {
   NewStudent,
   NewFaculty,
 } from './Auth.js';
+export * from './PasswordSetup.js';

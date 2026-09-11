@@ -10,9 +10,15 @@
     "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w backend\"",
     "build": "npm run build --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
     "format": "prettier --write .",
     "lint": "eslint packages/",
-    "prepare": "husky"
+    "prepare": "husky",
+    "livekit": "node scripts/livekit-dev.mjs",
+    "db:up": "docker compose -f infra/mysql/docker-compose.local.yml up -d",
+    "db:down": "docker compose -f infra/mysql/docker-compose.local.yml down",
+    "seed": "node infra/mysql/seed-dev.mjs",
+    "assets:mediapipe": "node scripts/mediapipe-assets.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

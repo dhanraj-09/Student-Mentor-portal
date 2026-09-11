@@ -42,6 +42,23 @@ function booleanEnv(name: string, fallback: boolean): boolean {
   return value.toLowerCase() === 'true';
 }
 
+export const LOG_LEVELS = ['error', 'warn', 'info', 'debug'] as const;
+
+export type LogLevel = (typeof LOG_LEVELS)[number];
+
+function logLevelEnv(name: string, fallback: LogLevel): LogLevel {
+  const value = process.env[name];
+  if (value === undefined || value === '') return fallback;
+  const normalised = value.toLowerCase();
+  const match = LOG_LEVELS.find((level) => level === normalised);
+  if (match === undefined) {
+    throw new Error(
+      `Environment variable ${name} must be one of ${LOG_LEVELS.join(', ')}, got "${value}"`
+    );
+  }
+  return match;
+}
+
 const nodeEnv = optionalEnv('NODE_ENV', 'development');
 
 export const config = {
@@ -56,6 +73,9 @@ export const config = {
     password: requireEnv('DB_PASSWORD'),
     database: requireEnv('DB_NAME'),
     connectionLimit: numberEnv('DB_CONNECTION_LIMIT', 10),
+    /** Aiven requires SSL, so it stays on by default. Set DB_SSL=false only for
+     *  a local database container that does not terminate TLS. */
+    ssl: booleanEnv('DB_SSL', true),
     /** Aiven requires SSL. Locally the CA lives at the backend package root
      *  (git-ignored) and is read from disk; in a deploy where no file exists
      *  (e.g. Railway) paste the cert contents into DB_SSL_CA_PEM instead. */
@@ -84,9 +104,86 @@ export const config = {
       .filter((origin) => origin.length > 0),
   },
 
+  /**
+   * LiveKit powers the WebRTC media for meeting video calls. The API secret is
+   * used only to sign short-lived join tokens and must never reach the browser.
+   * In production LIVEKIT_URL has to be wss://.
+   */
+  livekit: {
+    url: optionalEnv('LIVEKIT_URL', ''),
+    apiKey: optionalEnv('LIVEKIT_API_KEY', ''),
+    apiSecret: optionalEnv('LIVEKIT_API_SECRET', ''),
+    tokenTtlSeconds: numberEnv('LIVEKIT_TOKEN_TTL_SECONDS', 300),
+    configured:
+      optionalEnv('LIVEKIT_URL', '') !== '' &&
+      optionalEnv('LIVEKIT_API_KEY', '') !== '' &&
+      optionalEnv('LIVEKIT_API_SECRET', '') !== '',
+  },
+
+  logging: {
+    /** Verbosity floor. Defaults to every level locally, info upward in
+     *  production so request noise does not swamp the aggregator. */
+    level: logLevelEnv(
+      'LOG_LEVEL',
+      nodeEnv === 'production' ? 'info' : 'debug'
+    ),
+  },
+
+  /**
+   * Hops of reverse proxy in front of the app, passed to Express `trust proxy`.
+   *
+   * Rate limits are keyed on the client IP, and without this every request
+   * arriving through a proxy carries the proxy's address instead — collapsing
+   * all callers into one bucket, so a single client can lock everyone out.
+   * Set it to the number of proxies actually in front of the app (1 for
+   * Vercel/Railway/a single nginx). It stays 0 by default because trusting a
+   * forwarded header that nothing sets would let a client spoof its own IP.
+   */
+  trustProxy: numberEnv('TRUST_PROXY', 0),
+
+  /**
+   * First login flow: a provisioned student sets their password through a link
+   * emailed to them, or by pairing Microsoft Authenticator.
+   */
+  passwordSetup: {
+    /** Where the emailed link points, i.e. the frontend origin. */
+    appBaseUrl: optionalEnv('APP_BASE_URL', 'http://localhost:5173'),
+    /** Reset links are short lived; the email says 30 minutes. */
+    emailTokenTtlMinutes: numberEnv('PASSWORD_SETUP_EMAIL_TTL_MINUTES', 30),
+    /** A token minted after a verified authenticator code. */
+    totpTokenTtlMinutes: numberEnv('PASSWORD_SETUP_TOTP_TTL_MINUTES', 15),
+    /** Label shown in Microsoft Authenticator. */
+    totpIssuer: optionalEnv('TOTP_ISSUER', 'MARG Student Portal'),
+    /** Used when a student row has no explicit email address. */
+    studentEmailDomain: optionalEnv('STUDENT_EMAIL_DOMAIN', ''),
+  },
+
+  /**
+   * Outgoing mail. With no SMTP host configured the reset link is written to
+   * the server log instead, which keeps local development working without a
+   * mail account. That fallback refuses to run in production.
+   */
+  smtp: {
+    host: optionalEnv('SMTP_HOST', ''),
+    port: numberEnv('SMTP_PORT', 587),
+    secure: booleanEnv('SMTP_SECURE', false),
+    user: optionalEnv('SMTP_USER', ''),
+    password: optionalEnv('SMTP_PASSWORD', ''),
+    from: optionalEnv('SMTP_FROM', 'MARG Portal <noreply@localhost>'),
+    configured: optionalEnv('SMTP_HOST', '') !== '',
+  },
+
   rateLimit: {
     windowMs: numberEnv('RATE_LIMIT_WINDOW_MS', 30 * 60 * 1000),
     maxRequests: numberEnv('RATE_LIMIT_MAX_REQUESTS', 1000),
+    /**
+     * Login attempts are counted per client IP. Behind a reverse proxy every
+     * request arrives from the proxy's address unless `trust proxy` is set, so
+     * all users end up sharing one bucket — which is why this needs to be
+     * raisable for local multi-device testing rather than hard-coded.
+     */
+    loginWindowMs: numberEnv('LOGIN_RATE_LIMIT_WINDOW_MS', 15 * 60 * 1000),
+    loginMaxRequests: numberEnv('LOGIN_RATE_LIMIT_MAX_REQUESTS', 25),
   },
 } as const;
 

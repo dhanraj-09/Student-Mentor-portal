@@ -1,0 +1,233 @@
+.chat-page {
+  padding: 32px;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.chat-page.chat-with-list {
+  max-width: 1100px;
+}
+
+.chat-header h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #22314a;
+  margin: 0 0 4px;
+}
+
+.chat-header p {
+  color: #6b7a90;
+  margin: 0 0 14px;
+}
+
+/* Deliberately prominent: users reasonably assume a chat next to an
+   end-to-end encrypted call shares its guarantees, and this one does not. */
+.chat-privacy {
+  background: #fff7e6;
+  border: 1px solid #ffd591;
+  color: #8a5a00;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 0.82rem;
+  margin: 0 0 18px;
+}
+
+.chat-error {
+  background: #fdeaea;
+  border: 1px solid #f2b8b8;
+  color: #a12626;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+
+.chat-thread {
+  flex: 1;
+  min-height: 240px;
+  max-height: 55vh;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-empty {
+  color: #6b7a90;
+  font-size: 0.9rem;
+  margin: auto;
+}
+
+.chat-bubble {
+  max-width: 74%;
+  border-radius: 12px;
+  padding: 9px 13px;
+  border: 1px solid #e2e8f0;
+}
+
+.chat-bubble.mine {
+  align-self: flex-end;
+  background: #2f4f7a;
+  border-color: #2f4f7a;
+  color: #fff;
+}
+
+.chat-bubble.theirs {
+  align-self: flex-start;
+  background: #f4f7fb;
+  color: #22314a;
+}
+
+.chat-body {
+  margin: 0;
+  font-size: 0.92rem;
+  /* Preserve deliberate line breaks; wrap anything unbroken and long. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.chat-time {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+.chat-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.chat-form input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid #cfd8e3;
+  border-radius: 9px;
+  padding: 10px 13px;
+  font: inherit;
+  font-size: 0.92rem;
+}
+
+.chat-form input:focus {
+  outline: 2px solid #2f4f7a;
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.chat-form button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: none;
+  border-radius: 9px;
+  background: #2f4f7a;
+  color: #fff;
+  padding: 10px 18px;
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.chat-form button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Mentor view: conversation list beside the thread                            */
+/* -------------------------------------------------------------------------- */
+
+.chat-layout {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.chat-list {
+  width: 260px;
+  flex-shrink: 0;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 6px;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+.chat-list-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  border-radius: 9px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.chat-list-item:hover {
+  background: #f4f7fb;
+}
+
+.chat-list-item.active {
+  background: #eef4ff;
+}
+
+.chat-list-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #22314a;
+}
+
+.chat-unread {
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #b42318;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+}
+
+.chat-list-preview {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  color: #6b7a90;
+  /* One line only: a long message must not stretch the list. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-pane {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 900px) {
+  .chat-layout {
+    flex-direction: column;
+  }
+
+  .chat-list {
+    width: 100%;
+    max-height: 200px;
+  }
+}

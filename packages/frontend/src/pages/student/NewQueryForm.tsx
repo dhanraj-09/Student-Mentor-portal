@@ -46,7 +46,7 @@ const NewQueryForm = () => {
     setLoading(true);
     try {
       const queriesRes = await getStudentQueries(studentRegNo);
-      setQueries(Array.isArray(queriesRes.data) ? queriesRes.data : []);
+      setQueries(queriesRes.data.items);
 
       const studentRes = await getStudentData(studentRegNo);
       const assignedEmail = studentRes.data.assigned_faculty_email;

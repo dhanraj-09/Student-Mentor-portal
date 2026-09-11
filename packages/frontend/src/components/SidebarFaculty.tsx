@@ -21,7 +21,7 @@ const SidebarFaculty = () => {
         </div>
         <div
           className="nav-item-faculty"
-          onClick={() => navigate('/faculty-meetings')}
+          onClick={() => navigate('/dashboard-faculty')}
         >
           <span>Queries</span>
         </div>
@@ -39,9 +39,21 @@ const SidebarFaculty = () => {
         </div>
         <div
           className="nav-item-faculty"
-          onClick={() => navigate('/community')}
+          onClick={() => navigate('/faculty-chat')}
         >
-          <span>chat</span>
+          <span>Chat</span>
+        </div>
+        <div
+          className="nav-item-faculty"
+          onClick={() => navigate('/faculty-resources')}
+        >
+          <span>Resources</span>
+        </div>
+        <div
+          className="nav-item-faculty"
+          onClick={() => navigate('/faculty-profile')}
+        >
+          <span>My Profile</span>
         </div>
         <div
           className="nav-item-faculty"

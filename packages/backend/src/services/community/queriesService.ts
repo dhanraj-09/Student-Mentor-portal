@@ -10,18 +10,32 @@ import {
 import type { QueryRow } from '../../models/community/index.js';
 import { toNullableString } from '../../utils/helpers.js';
 import type { Result } from '../../utils/helpers.js';
+import type { PageRequest } from '../../utils/pagination.js';
 
 export type QueryErrorCode =
   'SELF_ONLY' | 'MISSING_FIELDS' | 'INVALID_STATUS' | 'NOT_OWNED';
 
 export function listStudentQueries(
-  registrationNo: string
+  registrationNo: string,
+  page?: PageRequest
 ): Promise<QueryRow[]> {
-  return findQueriesByStudent(registrationNo);
+  // One extra row so the caller can tell whether another page exists.
+  return findQueriesByStudent(
+    registrationNo,
+    page === undefined ? undefined : page.limit + 1,
+    page?.offset
+  );
 }
 
-export function listFacultyQueries(facultyEmail: string): Promise<QueryRow[]> {
-  return findQueriesByFaculty(facultyEmail);
+export function listFacultyQueries(
+  facultyEmail: string,
+  page?: PageRequest
+): Promise<QueryRow[]> {
+  return findQueriesByFaculty(
+    facultyEmail,
+    page === undefined ? undefined : page.limit + 1,
+    page?.offset
+  );
 }
 
 export async function createQuery(

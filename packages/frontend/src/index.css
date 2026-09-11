@@ -55,3 +55,20 @@ select {
 button {
   cursor: pointer;
 }
+
+/* Sidebar entries for features that do not exist yet. They previously looked
+   identical to working links but did nothing at all when clicked. */
+.nav-item-soon {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.nav-soon-tag {
+  margin-left: auto;
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 1px 7px;
+}
