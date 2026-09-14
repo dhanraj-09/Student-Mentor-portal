@@ -13,21 +13,25 @@ let pool: Pool | null = null;
 export function getPool(): Pool {
   if (pool === null) {
     // Prefer the inline cert (DB_SSL_CA_PEM) for deploys with no file on disk;
-    // otherwise read ca.pem from the backend package root.
-    const ca =
-      config.db.sslCaPem !== ''
-        ? config.db.sslCaPem
-        : readFileSync(config.db.sslCaPath);
+    // otherwise read ca.pem from the backend package root. A local development
+    // container has no TLS at all, which is what DB_SSL=false is for.
+    const ssl = config.db.ssl
+      ? {
+          ca:
+            config.db.sslCaPem !== ''
+              ? config.db.sslCaPem
+              : readFileSync(config.db.sslCaPath),
+          rejectUnauthorized: config.db.sslRejectUnauthorized,
+        }
+      : undefined;
+
     pool = mysql.createPool({
       host: config.db.host,
       port: config.db.port,
       user: config.db.user,
       password: config.db.password,
       database: config.db.database,
-      ssl: {
-        ca,
-        rejectUnauthorized: config.db.sslRejectUnauthorized,
-      },
+      ssl,
       waitForConnections: true,
       connectionLimit: config.db.connectionLimit,
       queueLimit: 0,

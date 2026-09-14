@@ -1,0 +1,40 @@
+# Local MySQL for development.
+#
+# Production uses MySQL hosted at Aiven, which is why the main docker-compose.yml
+# has no database service. This file provides an equivalent database on the
+# developer's machine so the app can run without the remote credentials.
+#
+#   docker compose -f infra/mysql/docker-compose.local.yml up -d
+#
+# Then point packages/backend/.env at it:
+#   DB_HOST=127.0.0.1
+#   DB_PORT=3307
+#   DB_USER=portal
+#   DB_PASSWORD=portal
+#   DB_NAME=student_mentor
+#   DB_SSL=false          # the local container does not terminate TLS
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: student_mentor_mysql_local
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: student_mentor
+      MYSQL_USER: portal
+      MYSQL_PASSWORD: portal
+    ports:
+      # 3307 on the host, so a MySQL already installed locally is untouched.
+      - '3307:3306'
+    volumes:
+      - mysql_local_data:/var/lib/mysql
+      # Applied automatically the first time the volume is created.
+      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test:
+        ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-uportal', '-pportal']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql_local_data:

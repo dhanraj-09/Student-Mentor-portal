@@ -207,9 +207,8 @@ const FacultyLogin = () => {
           </div>
         </div>
 
-        <p className="auth-switch">
-          Are you a student?
-          <Link to="/">Student login</Link>
+        <p className="faculty-login-switch">
+          Are you a student? <Link to="/">Student sign in</Link>
         </p>
       </div>
     </div>

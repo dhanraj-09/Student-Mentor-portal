@@ -487,3 +487,112 @@
   background: #cbd5e1;
   cursor: not-allowed;
 }
+
+/* ------------------------------------------------------------------
+   Live meeting actions. Joining the call is the immediate action, so it
+   is the filled button; completing the meeting steps back to an outline
+   so the two no longer compete.
+   ------------------------------------------------------------------ */
+
+.fm-container .fm-actions {
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.fm-container .fm-join-call {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #ff9d2e 0%, #ff8c00 100%);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  box-shadow: 0 4px 10px rgba(255, 140, 0, 0.28);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+.fm-container .fm-join-call:hover {
+  background: linear-gradient(135deg, #ff8c00 0%, #e67e22 100%);
+  box-shadow: 0 6px 14px rgba(230, 126, 34, 0.34);
+  transform: translateY(-1px);
+}
+.fm-container .fm-join-call:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(230, 126, 34, 0.3);
+}
+.fm-container .fm-join-call:focus-visible {
+  outline: 3px solid rgba(255, 140, 0, 0.45);
+  outline-offset: 2px;
+}
+
+/* Secondary next to "Join call" while the meeting is live. */
+.fm-container .fm-actions .fm-join-call + .fm-complete {
+  background: #fff;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+  box-shadow: none;
+}
+.fm-container .fm-actions .fm-join-call + .fm-complete:hover {
+  background: #fff7ed;
+  border-color: #fdba74;
+}
+
+/* Live indicator on an ongoing meeting, mirroring the student view. */
+.fm-container .fm-live {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 4px 0 2px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #fff7ed 0%, #fffdf9 100%);
+  border: 1px solid #ffe0bd;
+}
+.fm-container .fm-live-dot {
+  position: relative;
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #16a34a;
+}
+.fm-container .fm-live-dot::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 2px solid rgba(22, 163, 74, 0.35);
+  animation: fm-live-pulse 1.8s ease-out infinite;
+}
+@keyframes fm-live-pulse {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fm-container .fm-live-dot::after {
+    animation: none;
+  }
+}
+.fm-container .fm-live-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #15803d;
+}
+.fm-container .fm-live-sub {
+  font-size: 0.82rem;
+  color: #8a6d4d;
+}

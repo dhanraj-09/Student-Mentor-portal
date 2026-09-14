@@ -1,4 +1,6 @@
 import { ChevronDown, Linkedin, Mail } from 'lucide-react';
+import { useContext } from 'react';
+import { FacultyContext } from '../../context/FacultyContext';
 import './teacherprofile.css';
 
 const SECTIONS = [
@@ -9,39 +11,62 @@ const SECTIONS = [
 ];
 
 const TeacherProfile = () => {
+  const { faculty, loading } = useContext(FacultyContext);
+
+  if (loading) {
+    return <div className="profile-page">Loading profile...</div>;
+  }
+
+  if (faculty === null) {
+    return <div className="profile-page">Could not load your profile.</div>;
+  }
+
   return (
     <div className="profile-page">
       <div className="container">
         <header className="header-card">
           <div className="avatar-section">
             <div className="profile-img-wrapper">
-              <img
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400"
-                alt="Professor"
-              />
+              {/* No avatar is stored yet, so fall back to the initial. */}
+              <div className="profile-initial">
+                {faculty.name.charAt(0).toUpperCase()}
+              </div>
             </div>
           </div>
 
           <div className="info-section">
-            <h1 className="name">XYZ</h1>
+            <h1 className="name">{faculty.name}</h1>
             <hr className="divider" />
             <div className="title-group">
-              <p className="role">Professor</p>
-              <p className="department">Department of Information Technology</p>
+              <p className="role">{faculty.designation ?? 'Faculty'}</p>
+              <p className="department">
+                {faculty.department === null
+                  ? 'Department not set'
+                  : `Department of ${faculty.department}`}
+              </p>
             </div>
 
             <div className="contact-pills">
-              <div className="pill">aditya.dhanraj@gmail.com</div>
-              <div className="pill">Contact info</div>
+              <div className="pill">{faculty.email}</div>
+              {faculty.phone_number !== null && (
+                <div className="pill">{faculty.phone_number}</div>
+              )}
             </div>
 
             <div className="social-links">
-              <div className="social-icon">
-                <Linkedin size={20} />
-              </div>
-              <div className="social-icon">
+              {faculty.linked_in !== null && (
+                <a
+                  className="social-icon"
+                  href={faculty.linked_in}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Linkedin size={20} />
+                </a>
+              )}
+              <a className="social-icon" href={`mailto:${faculty.email}`}>
                 <Mail size={20} />
-              </div>
+              </a>
             </div>
           </div>
         </header>

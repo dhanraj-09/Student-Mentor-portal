@@ -1,5 +1,14 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { Calendar, CheckCircle, Circle, Clock, Plus, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Calendar,
+  CheckCircle,
+  Circle,
+  Clock,
+  Plus,
+  Video,
+  X,
+} from 'lucide-react';
 import { MARKS_MAX, MARKS_MIN } from 'shared';
 import type { MeetingSkillOption, MeetingStatus, Student } from 'shared';
 import {
@@ -23,6 +32,7 @@ type Tab = (typeof TABS)[number];
 type PanelMode = 'create' | 'complete';
 
 const FacultyMeetings = () => {
+  const navigate = useNavigate();
   const { faculty, loading: authLoading } = useContext(FacultyContext);
 
   const [meetings, setMeetings] = useState<FacultyMeeting[]>([]);
@@ -296,6 +306,16 @@ const FacultyMeetings = () => {
                 </div>
               )}
 
+              {m.status === 'ongoing' && (
+                <div className="fm-live">
+                  <span className="fm-live-dot" aria-hidden="true" />
+                  <span className="fm-live-title">Meeting is live</span>
+                  <span className="fm-live-sub">
+                    End-to-end encrypted video call
+                  </span>
+                </div>
+              )}
+
               <div className="fm-meta">
                 <span>
                   <Clock size={14} /> {formatDate(m.created_at)}
@@ -343,12 +363,22 @@ const FacultyMeetings = () => {
                   </button>
                 )}
                 {m.status === 'ongoing' && (
-                  <button
-                    className="fm-complete"
-                    onClick={() => openComplete(m)}
-                  >
-                    <CheckCircle size={16} /> Complete
-                  </button>
+                  <>
+                    <button
+                      className="fm-join-call"
+                      onClick={() =>
+                        navigate(`/faculty-meetings/${m.meeting_id}/call`)
+                      }
+                    >
+                      <Video size={16} /> Join call
+                    </button>
+                    <button
+                      className="fm-complete"
+                      onClick={() => openComplete(m)}
+                    >
+                      <CheckCircle size={16} /> Complete
+                    </button>
+                  </>
                 )}
                 {m.status === 'completed' && (
                   <span className="fm-done">

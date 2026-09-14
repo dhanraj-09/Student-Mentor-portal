@@ -182,3 +182,22 @@
 .auth-wrapper .mt-auto {
   margin-top: auto;
 }
+
+/* Route back to the student form, so neither role can get stranded on the
+   wrong sign-in page. */
+.faculty-login-switch {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #4a5a72;
+}
+
+.faculty-login-switch a {
+  color: #2f4f7a;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.faculty-login-switch a:hover {
+  text-decoration: underline;
+}

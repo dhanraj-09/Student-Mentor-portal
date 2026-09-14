@@ -12,10 +12,11 @@ import {
   Users,
   X,
 } from 'lucide-react';
-import type { Query, QueryStatus } from 'shared';
+import type { FacultyDashboard, Query, QueryStatus } from 'shared';
 import {
   getApiErrorMessage,
   getAssignedStudents,
+  getFacultyDashboard,
   getFacultyQueries,
   respondToQuery,
 } from '../../api/api';
@@ -29,6 +30,8 @@ const FacultyDashboard = () => {
 
   const [queries, setQueries] = useState<Query[]>([]);
   const [studentCount, setStudentCount] = useState(0);
+  // Server-side aggregate, so the meeting tile reports real counts.
+  const [summary, setSummary] = useState<FacultyDashboard | null>(null);
   const [dataLoading, setDataLoading] = useState(true);
 
   const [selectedQuery, setSelectedQuery] = useState<Query | null>(null);
@@ -57,10 +60,19 @@ const FacultyDashboard = () => {
 
     try {
       const queriesRes = await getFacultyQueries(facultyEmail);
-      setQueries(Array.isArray(queriesRes.data) ? queriesRes.data : []);
+      setQueries(queriesRes.data.items);
     } catch (error) {
       console.error('Failed to load queries', error);
       setQueries([]);
+    }
+
+    try {
+      const summaryRes = await getFacultyDashboard();
+      setSummary(summaryRes.data);
+    } catch (error) {
+      // Only the stat tiles depend on this; the queries list still renders.
+      console.error('Failed to load dashboard summary', error);
+      setSummary(null);
     }
 
     setDataLoading(false);
@@ -161,10 +173,13 @@ const FacultyDashboard = () => {
             <div className="icon-wrapper calendar">
               <Calendar size={20} />
             </div>
-            <span className="pill-tag grey">Next: 2:00 PM</span>
+            <span className="pill-tag grey">
+              {summary === null ? '—' : `${summary.meetings.pending} awaiting`}
+            </span>
           </div>
-          <h2>3</h2>
-          <p>MEETINGS TODAY</p>
+          {/* Was a fixed "3"; these are the mentor's real live calls. */}
+          <h2>{summary?.meetings.ongoing ?? 0}</h2>
+          <p>ONGOING MEETINGS</p>
         </div>
       </div>
 

@@ -4,7 +4,8 @@ import { mutate, queryOne } from '../shared/index.js';
 export interface StudentCredentialsRow extends RowDataPacket {
   registration_no: string;
   name: string;
-  password_hash: string;
+  /** Null until the student sets one through the first login flow. */
+  password_hash: string | null;
 }
 
 export interface FacultyCredentialsRow extends RowDataPacket {

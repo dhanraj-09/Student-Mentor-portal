@@ -1,0 +1,81 @@
+.notfound-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fa;
+  padding: 24px;
+}
+
+.notfound-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 40px 44px;
+  max-width: 520px;
+  text-align: center;
+}
+
+.notfound-code {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #f97316;
+  margin: 0;
+  line-height: 1;
+}
+
+.notfound-card h1 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #22314a;
+  margin: 12px 0 10px;
+}
+
+.notfound-path {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85rem;
+  color: #64748b;
+  background: #f1f5f9;
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin: 0 0 12px;
+  /* A long unmatched path must not stretch the card. */
+  overflow-wrap: anywhere;
+}
+
+.notfound-help {
+  color: #4a5a72;
+  font-size: 0.92rem;
+  margin: 0 0 22px;
+}
+
+.notfound-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.notfound-btn {
+  border: 1px solid #cfd8e3;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 0.9rem;
+  color: #4a5a72;
+  text-decoration: none;
+}
+
+.notfound-btn.primary {
+  background: #f97316;
+  border-color: #f97316;
+  color: #fff;
+}
+
+.notfound-btn:hover {
+  border-color: #94a3b8;
+}
+
+.notfound-btn.primary:hover {
+  background: #ea6a0c;
+  border-color: #ea6a0c;
+}

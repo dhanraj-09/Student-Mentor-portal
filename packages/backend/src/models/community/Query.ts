@@ -24,28 +24,39 @@ export interface NewQuery {
 }
 
 export function findQueriesByStudent(
-  registrationNo: string
+  registrationNo: string,
+  limit?: number,
+  offset = 0
 ): Promise<QueryRow[]> {
+  // Unbounded when no limit is given, so existing callers are unchanged.
+  const bound = limit === undefined ? '' : ' LIMIT ? OFFSET ?';
+  const params: unknown[] =
+    limit === undefined ? [registrationNo] : [registrationNo, limit, offset];
   return query<QueryRow>(
     `SELECT query_id, student_id, category, subcategory, subject, description, status, created_at, response, responded_at
      FROM queries
      WHERE student_id = ?
-     ORDER BY created_at DESC`,
-    [registrationNo]
+     ORDER BY created_at DESC${bound}`,
+    params
   );
 }
 
 export function findQueriesByFaculty(
-  facultyEmail: string
+  facultyEmail: string,
+  limit?: number,
+  offset = 0
 ): Promise<QueryRow[]> {
+  const bound = limit === undefined ? '' : ' LIMIT ? OFFSET ?';
+  const params: unknown[] =
+    limit === undefined ? [facultyEmail] : [facultyEmail, limit, offset];
   return query<QueryRow>(
     `SELECT q.query_id, q.student_id, q.category, q.subcategory, q.subject, q.description,
             q.status, q.created_at, q.response, q.responded_at
      FROM queries q
      JOIN student s ON q.student_id = s.registration_no
      WHERE s.assigned_faculty_email = ?
-     ORDER BY q.created_at DESC`,
-    [facultyEmail]
+     ORDER BY q.created_at DESC${bound}`,
+    params
   );
 }
 

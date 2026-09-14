@@ -19,6 +19,7 @@ import {
   getFacultyUser,
   getStudentUser,
 } from '../../utils/helpers.js';
+import { parsePageRequest, toPage } from '../../utils/pagination.js';
 
 const router = Router();
 
@@ -45,7 +46,9 @@ router.get(
   '/student/:registration_no/queries',
   studentOwnership,
   asyncHandler(async (req, res) => {
-    res.status(200).json(await listStudentQueries(req.params.registration_no));
+    const page = parsePageRequest(req.query);
+    const rows = await listStudentQueries(req.params.registration_no, page);
+    res.status(200).json(toPage(rows, page));
   })
 );
 
@@ -53,7 +56,9 @@ router.get(
   '/faculty/:email/queries',
   facultyOwnership,
   asyncHandler(async (req, res) => {
-    res.status(200).json(await listFacultyQueries(req.params.email));
+    const page = parsePageRequest(req.query);
+    const rows = await listFacultyQueries(req.params.email, page);
+    res.status(200).json(toPage(rows, page));
   })
 );
 

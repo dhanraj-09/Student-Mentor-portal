@@ -17,3 +17,23 @@ export {
   setReadiness,
   getMeetingDetail,
 } from './sharedMeetingsService.js';
+
+export {
+  registerDeviceKey,
+  getDeviceKey,
+  listParticipantKeys,
+  getKeyState,
+  publishEnvelopes,
+  requestKey,
+  resetRoomKeys,
+  issueRoomToken,
+  fingerprintOf,
+} from './videoRoomService.js';
+export type {
+  VideoRoomErrorCode,
+  DeviceKeyView,
+  KeyStateView,
+  RoomAccessView,
+} from './videoRoomService.js';
+
+export { isLiveKitConfigured } from './livekitService.js';

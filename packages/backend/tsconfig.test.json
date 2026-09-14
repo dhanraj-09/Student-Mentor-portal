@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    // Widened from ./src so the test tree and vitest config are in the program;
+    // nothing is emitted here, so this cannot affect the build output.
+    "rootDir": ".",
+    "types": ["node"]
+  },
+  "include": ["src/**/*", "__tests__/**/*", "vitest.config.ts"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -19,6 +19,7 @@ export type AuthErrorCode =
   | 'WEAK_PASSWORD'
   | 'DUPLICATE_ACCOUNT'
   | 'INVALID_CREDENTIALS'
+  | 'PASSWORD_NOT_SET'
   | 'MISSING_REFRESH_TOKEN'
   | 'INVALID_REFRESH_TOKEN';
 
@@ -133,9 +134,21 @@ export async function loginStudent(
 
   const student = await findStudentCredentials(registrationNo);
 
+  // A provisioned student has no password yet. Saying so is deliberate: it is
+  // what sends them into the first login flow, and it is the one case where
+  // the response distinguishes a known registration number from an unknown
+  // one. The login rate limit applies here as it does to any other attempt.
+  if (
+    student !== null &&
+    (student.password_hash === null || student.password_hash === '')
+  ) {
+    return { success: false, code: 'PASSWORD_NOT_SET' };
+  }
+
   // the endpoint cannot be used to enumerate registration numbers.
   if (
     student === null ||
+    student.password_hash === null ||
     !(await bcrypt.compare(passwordInput, student.password_hash))
   ) {
     return { success: false, code: 'INVALID_CREDENTIALS' };

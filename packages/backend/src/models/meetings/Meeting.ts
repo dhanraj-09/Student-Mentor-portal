@@ -45,8 +45,13 @@ export async function insertMeeting(
 }
 
 export function findMeetingsByFaculty(
-  facultyEmail: string
+  facultyEmail: string,
+  limit?: number,
+  offset = 0
 ): Promise<MeetingRow[]> {
+  const bound = limit === undefined ? '' : ' LIMIT ? OFFSET ?';
+  const params: unknown[] =
+    limit === undefined ? [facultyEmail] : [facultyEmail, limit, offset];
   return query<MeetingRow>(
     `SELECT m.meeting_id, m.student_id, s.name AS student_name, m.faculty_email,
             m.initiated_by, m.reason, m.status, m.student_ready, m.faculty_ready,
@@ -58,21 +63,26 @@ export function findMeetingsByFaculty(
      LEFT JOIN meeting_skill_options mso ON ms.skill_id = mso.skill_id
      WHERE m.faculty_email = ?
      GROUP BY m.meeting_id, s.name
-     ORDER BY FIELD(m.status, 'pending', 'accepted', 'ongoing', 'completed'), m.created_at DESC`,
-    [facultyEmail]
+     ORDER BY FIELD(m.status, 'pending', 'accepted', 'ongoing', 'completed'), m.created_at DESC${bound}`,
+    params
   );
 }
 
 export function findMeetingsByStudent(
-  registrationNo: string
+  registrationNo: string,
+  limit?: number,
+  offset = 0
 ): Promise<MeetingRow[]> {
+  const bound = limit === undefined ? '' : ' LIMIT ? OFFSET ?';
+  const params: unknown[] =
+    limit === undefined ? [registrationNo] : [registrationNo, limit, offset];
   return query<MeetingRow>(
     `SELECT meeting_id, student_id, faculty_email, initiated_by, reason, status,
             student_ready, faculty_ready, created_at, completed_at
      FROM meetings
      WHERE student_id = ?
-     ORDER BY created_at DESC`,
-    [registrationNo]
+     ORDER BY created_at DESC${bound}`,
+    params
   );
 }
 
